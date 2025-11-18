@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Button, Card } from '../components/UI'
 import Layout from '../components/Layout'
 import { colors } from '../components/Theme'
+import ProductScroller from '../components/ProductScroller'
 
 const features = [
   {title:'Blazing VPS',desc:'SSD NVMe, global regions, instant provision',tone:'violet', bg:'rgba(167,139,250,0.14)'},
@@ -101,7 +102,7 @@ export default function Home(){
             </div>
           </div>
 
-          <button
+        <button
             type="button"
             onClick={handleScrollDown}
             className="group mt-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm border backdrop-blur"
@@ -137,6 +138,9 @@ export default function Home(){
           </Card>
         ))}
       </section>
+
+      {/* Horizontal product scroller with wheel-to-horizontal behavior until edges */}
+      <ProductScroller />
 
       <section className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
         {[1,2,3].map(i=> (
