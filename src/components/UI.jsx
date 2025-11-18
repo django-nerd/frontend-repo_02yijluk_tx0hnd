@@ -27,9 +27,10 @@ export const Button = ({variant='primary', className='', children, style={}, ...
       class: `text-white hover:opacity-90`,
       style: { backgroundColor: '#EF4444' }
     },
+    // Candy now uses a static pastel color (no gradient)
     candy: {
-      class: `text-slate-900 shadow-sm hover:shadow-md`,
-      style: { backgroundImage: 'linear-gradient(90deg, #FDE68A 0%, #FCA5A5 50%, #A78BFA 100%)' }
+      class: `text-white shadow-sm hover:shadow-md`,
+      style: { backgroundColor: colors.primary }
     }
   }
   const v = variantMap[variant] || variantMap.primary
