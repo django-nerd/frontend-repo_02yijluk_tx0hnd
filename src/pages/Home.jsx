@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import Spline from '@splinetool/react-spline'
 import { Button, Card } from '../components/UI'
 import Layout from '../components/Layout'
 import { colors } from '../components/Theme'
@@ -14,13 +13,16 @@ const features = [
 export default function Home(){
   const featuresRef = useRef(null)
   const heroRef = useRef(null)
+  const reduceMotion = useRef(false)
   const [scrollY, setScrollY] = useState(0)
 
   useEffect(()=>{
+    // respect reduced motion
+    reduceMotion.current = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     const onScroll = () => {
       const y = window.scrollY
       setScrollY(y)
-      // set CSS variables for subtle parallax
       if(heroRef.current){
         const h = heroRef.current.offsetHeight || window.innerHeight
         const p = Math.min(1, Math.max(0, y / h))
@@ -39,34 +41,54 @@ export default function Home(){
     window.scrollTo({ top, behavior: 'smooth' })
   }
 
+  // Motion helpers (no heavy 3D, just cheap transforms)
+  const shift = reduceMotion.current ? 0 : Math.min(40, scrollY * 0.06)
+  const blobShiftA = reduceMotion.current ? 0 : Math.min(60, scrollY * 0.03)
+  const blobShiftB = reduceMotion.current ? 0 : Math.min(60, scrollY * 0.02)
+
   return (
     <Layout>
-      {/* Full-bleed, full-screen Nimbus Hero with scroll-driven motion */}
+      {/* Full-bleed, full-screen Nimbus Hero (no 3D) */}
       <section
         ref={heroRef}
         className="relative overflow-hidden min-h-screen flex items-stretch w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]"
         aria-label="Nimbus hero"
         style={{ position: 'relative' }}
       >
-        <div className="absolute inset-0">
-          <Spline scene="https://prod.spline.design/8nsoLg1te84JZcE9/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        {/* Lightweight background: layered gradients + blurred blobs */}
+        <div className="absolute inset-0" aria-hidden>
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(1200px 500px at 80% -10%, rgba(167,139,250,0.18), transparent),\n                 radial-gradient(900px 400px at -10% 10%, rgba(244,114,182,0.16), transparent),\n                 linear-gradient(to top, rgba(252,250,255,0.95), rgba(252,250,255,0.55))',
+            }}
+          />
+          {/* Pink blob */}
+          <div
+            className="absolute -top-16 -left-10 w-[420px] h-[420px] rounded-full blur-3xl opacity-60"
+            style={{
+              background: 'radial-gradient(circle at 30% 30%, rgba(244,114,182,0.55), rgba(244,114,182,0.0) 60%)',
+              transform: `translateY(${blobShiftA}px)`,
+              transition: 'transform 0.15s ease-out',
+            }}
+          />
+          {/* Sky blob */}
+          <div
+            className="absolute top-10 right-0 w-[520px] h-[520px] rounded-full blur-3xl opacity-60"
+            style={{
+              background: 'radial-gradient(circle at 70% 50%, rgba(96,165,250,0.45), rgba(96,165,250,0.0) 60%)',
+              transform: `translateY(-${blobShiftB}px)`,
+              transition: 'transform 0.15s ease-out',
+            }}
+          />
         </div>
 
-        {/* Soft gradient veils for readability */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(60% 40% at 20% 10%, rgba(244,114,182,0.15), transparent), radial-gradient(50% 35% at 80% 0%, rgba(96,165,250,0.15), transparent), linear-gradient(to top, rgba(252,250,255,0.92), transparent 40%)',
-          }}
-        />
-
-        {/* Copy block with parallax on scroll */}
+        {/* Copy block with subtle parallax on scroll */}
         <div className="relative z-10 w-full flex flex-col items-center justify-end md:justify-center text-center px-4 pb-28 md:pb-10">
           <div
             style={{
-              transform: `translateY(${Math.min(40, scrollY * 0.06)}px)`,
+              transform: `translateY(${shift}px)`,
               transition: 'transform 0.15s ease-out',
             }}
           >
