@@ -1,14 +1,15 @@
 export const colors = {
-  bg: '#F7F2FA',
-  primary: '#F24AA7',
-  secondary: '#F9A8D4',
-  tertiary: '#A9D5F9',
-  mint: '#A9F9CD',
-  lightgreen: '#D5F9A9',
-  blue: '#A9D5F9',
-  magenta: '#F24AA7',
-};
+  // Pro Clean palette
+  bg: '#F8FAFC',           // slate-50
+  surface: '#FFFFFF',
+  border: '#E5E7EB',       // gray-200
+  text: '#0F172A',         // slate-900
+  muted: '#64748B',        // slate-500
+  primary: '#0EA5E9',      // sky-500
+  primaryDark: '#0284C7',  // sky-600
+  accent: '#22C55E',       // emerald-500 (sparingly)
+}
 
 export const radii = {
-  base: '12px',
-};
+  base: '6px',
+}
