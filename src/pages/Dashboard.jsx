@@ -3,34 +3,83 @@ import Layout from '../components/Layout'
 import { Button, Card, Badge, Input } from '../components/UI'
 import { SalesLine, UnitsBar } from '../components/Charts'
 
-const roleColors = { buyer:'blue', reseller:'mint', admin:'pink', owner:'yellow' }
+const ROLES = ['reseller','admin','investor','engineer','high_admin','owner']
 
 export default function Dashboard(){
   const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
-  const [role,setRole] = useState('buyer')
+  const [role,setRole] = useState('reseller')
+  const [email,setEmail] = useState('user@company.com')
   const [metrics,setMetrics] = useState({cards:[]})
   const [series,setSeries] = useState([])
-
-  useEffect(()=>{(async()=>{
-    const m = await fetch(`${baseUrl}/api/metrics`).then(r=>r.json())
-    const s = await fetch(`${baseUrl}/api/sales`).then(r=>r.json())
-    setMetrics(m)
-    setSeries(s.series)
-  })()},[])
-
   const [metricKey,setMetricKey] = useState('gross')
 
-  const canAdmin = role==='admin' || role==='owner'
+  const [autoPay,setAutoPay] = useState({loading:true, enabled:true})
+  const [withdraw,setWithdraw] = useState({amount:'', loading:false, result:null, error:''})
+
+  const canViewLogs = ['admin','investor','engineer','owner'].includes(role)
+  const canToggleAutoPay = ['admin','high_admin','owner'].includes(role)
+
+  useEffect(()=>{(async()=>{
+    try{
+      const m = await fetch(`${baseUrl}/api/metrics`).then(r=>r.json())
+      const s = await fetch(`${baseUrl}/api/sales`).then(r=>r.json())
+      setMetrics(m)
+      setSeries(s.series||[])
+    }catch(e){
+      setMetrics({cards:[]}); setSeries([])
+    }
+  })()},[])
+
+  useEffect(()=>{(async()=>{
+    try{
+      setAutoPay(a=>({...a,loading:true}))
+      const ap = await fetch(`${baseUrl}/api/settings/auto-payment`).then(r=>r.json())
+      setAutoPay({loading:false, enabled: !!ap.enabled})
+    }catch(e){ setAutoPay({loading:false, enabled:true}) }
+  })()},[])
+
+  async function toggleAutoPayment(){
+    try{
+      setAutoPay(a=>({...a,loading:true}))
+      const res = await fetch(`${baseUrl}/api/settings/auto-payment`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled:!autoPay.enabled})})
+      const data = await res.json()
+      setAutoPay({loading:false, enabled: !!data.enabled})
+    }catch(e){ setAutoPay(a=>({...a,loading:false})) }
+  }
+
+  async function submitWithdrawal(){
+    setWithdraw(w=>({...w, loading:true, error:'', result:null}))
+    try{
+      const amountVal = parseFloat(withdraw.amount)
+      if(isNaN(amountVal) || amountVal <= 0){
+        throw new Error('Masukkan jumlah yang valid')
+      }
+      const res = await fetch(`${baseUrl}/api/withdrawals`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({actor_email:email, amount:amountVal, role})})
+      if(!res.ok){ throw new Error(await res.text() || 'Gagal mengajukan penarikan') }
+      const data = await res.json()
+      setWithdraw({amount:'', loading:false, error:'', result:data})
+    }catch(err){
+      setWithdraw(w=>({...w, loading:false, error: err.message || 'Terjadi kesalahan'}))
+    }
+  }
 
   return (
     <Layout>
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <div className="flex items-center gap-2">
-          <span className="text-sm">Role</span>
-          {['buyer','reseller','admin','owner'].map(r=> (
-            <button key={r} onClick={()=>setRole(r)} className={`px-3 py-1.5 rounded-[12px] ${role===r? 'bg-[#A9D5F9]':'bg-slate-100'}`}>{r}</button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Role</span>
+            <div className="flex items-center gap-1">
+              {ROLES.map(r=> (
+                <button key={r} onClick={()=>setRole(r)} className={`px-3 py-1.5 rounded-[6px] border ${role===r? 'bg-sky-100 border-sky-200':'bg-white border-gray-200 hover:bg-slate-50'}`}>{r.replace('_',' ')}</button>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm">Email</span>
+            <Input value={email} onChange={e=>setEmail(e.target.value)} className="w-56"/>
+          </div>
         </div>
       </div>
 
@@ -50,7 +99,7 @@ export default function Dashboard(){
             <h3 className="font-semibold">Sales (30d)</h3>
             <div className="flex items-center gap-2 text-sm">
               {['gross','net','units'].map(k=> (
-                <button key={k} onClick={()=>setMetricKey(k)} className={`px-2 py-1 rounded-[12px] ${metricKey===k? 'bg-[#F9A8D4]':'bg-slate-100'}`}>{k}</button>
+                <button key={k} onClick={()=>setMetricKey(k)} className={`px-2 py-1 rounded-[6px] border ${metricKey===k? 'bg-pink-100 border-pink-200':'bg-white border-gray-200 hover:bg-slate-50'}`}>{k}</button>
               ))}
             </div>
           </div>
@@ -61,13 +110,15 @@ export default function Dashboard(){
         </Card>
         <Card>
           <h3 className="font-semibold mb-2">Auto Payment</h3>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between text-sm">
             <p>Status</p>
-            <Badge color="mint">Operational</Badge>
+            <Badge color={autoPay.enabled? 'green':'yellow'}>{autoPay.loading? 'Loading…' : (autoPay.enabled? 'On':'Off')}</Badge>
           </div>
-          {canAdmin && (
+          {canToggleAutoPay && (
             <div className="mt-3">
-              <Button variant="tertiary" className="w-full">Toggle Auto-Capture</Button>
+              <Button variant="secondary" className="w-full" disabled={autoPay.loading} onClick={toggleAutoPayment}>
+                {autoPay.loading? 'Working…' : (autoPay.enabled? 'Turn Off Auto-Capture' : 'Turn On Auto-Capture')}
+              </Button>
             </div>
           )}
           <div className="mt-3 text-sm text-slate-600">
@@ -99,7 +150,7 @@ export default function Dashboard(){
                     <td className="p-2">user****@mail.com</td>
                     <td className="p-2">${(s.gross/100).toFixed(2)}</td>
                     <td className="p-2">-${(s.gross/1000).toFixed(2)}</td>
-                    <td className="p-2"><Badge color={i%3===0?'pink':'mint'}>{i%3===0?'Pending':'Paid'}</Badge></td>
+                    <td className="p-2"><Badge color={i%3===0?'yellow':'green'}>{i%3===0?'Pending':'Paid'}</Badge></td>
                     <td className="p-2">{i%2===0?'PayPal':'Robux'}</td>
                   </tr>
                 ))}
@@ -109,31 +160,40 @@ export default function Dashboard(){
         </Card>
         <Card>
           <h3 className="font-semibold mb-2">Withdrawals</h3>
-          <div className="rounded-[12px] p-3 bg-[#FFF6FB] text-sm">Reseller T+5 payout policy applies.</div>
-          {canAdmin && (
-            <div className="mt-3 space-y-2">
-              <Input placeholder="Amount" />
-              <div className="flex gap-2">
-                <Button>Approve</Button>
-                <Button variant="secondary">Reject</Button>
-              </div>
-            </div>
+          {role==='reseller' && (
+            <div className="rounded-[6px] p-3 bg-slate-50 text-sm border border-gray-200">Reseller T+5 payout policy applies. Dana cair 5 hari setelah pengajuan.</div>
           )}
+          {role==='high_admin' && (
+            <div className="rounded-[6px] p-3 bg-slate-50 text-sm border border-gray-200">High admin dapat mencairkan dana secara langsung (instan).</div>
+          )}
+          <div className="mt-3 space-y-2">
+            <Input placeholder="Amount" value={withdraw.amount} onChange={e=>setWithdraw(w=>({...w, amount:e.target.value}))} />
+            <Button onClick={submitWithdrawal} disabled={withdraw.loading}>{withdraw.loading? 'Submitting…':'Request Withdrawal'}</Button>
+            {withdraw.error && <p className="text-sm text-red-600">{withdraw.error}</p>}
+            {withdraw.result && (
+              <div className="text-sm text-slate-700 space-y-1">
+                <p>Status: <span className="font-medium">{withdraw.result.status}</span></p>
+                {withdraw.result.scheduled_date && <p>Scheduled: {new Date(withdraw.result.scheduled_date).toLocaleString()}</p>}
+              </div>
+            )}
+          </div>
         </Card>
       </section>
 
-      <section className="mt-6">
-        <Card>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold">Logs</h3>
-            <div className="flex items-center gap-2 text-sm">
-              <Input placeholder="Search" className="w-48" />
-              <Button variant="tertiary">Export CSV</Button>
+      {canViewLogs && (
+        <section className="mt-6">
+          <Card>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold">Logs</h3>
+              <div className="flex items-center gap-2 text-sm">
+                <Input placeholder="Search" className="w-48" aria-label="Search logs" />
+                <Button variant="secondary">Export CSV</Button>
+              </div>
             </div>
-          </div>
-          <LogTable baseUrl={baseUrl} />
-        </Card>
-      </section>
+            <LogTable baseUrl={baseUrl} />
+          </Card>
+        </section>
+      )}
     </Layout>
   )
 }
@@ -141,8 +201,10 @@ export default function Dashboard(){
 function LogTable({baseUrl}){
   const [rows,setRows] = useState([])
   useEffect(()=>{(async()=>{
-    const r = await fetch(`${baseUrl}/api/logs`).then(r=>r.json())
-    setRows(r.items)
+    try{
+      const r = await fetch(`${baseUrl}/api/logs`).then(r=>r.json())
+      setRows(r.items||[])
+    }catch(e){ setRows([]) }
   })()},[])
   return (
     <div className="overflow-auto">
