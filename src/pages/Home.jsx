@@ -158,7 +158,7 @@ export default function Home(){
       </section>
 
       <section className="mt-12">
-        <div className="rounded-[14px] p-6" style={{ background: 'linear-gradient(90deg,#FDE68A 0%, #FCA5A5 50%, #A78BFA 100%)', color:'#0F172A' }}>
+        <div className="rounded-[14px] p-6 border" style={{ backgroundColor: '#F5F3FF', color:'#0F172A', borderColor: colors.border }}>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
               <h3 className="text-xl font-semibold">Make it yours</h3>
