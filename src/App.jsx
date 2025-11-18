@@ -6,12 +6,14 @@ import Order from './pages/Order'
 import Checkout from './pages/Checkout'
 import Payment from './pages/Payment'
 import TOS from './pages/TOS'
+import ControlPanel from './pages/ControlPanel'
 
 function App(){
   return (
     <Routes>
       <Route path="/" element={<Home/>} />
       <Route path="/dashboard" element={<Dashboard/>} />
+      <Route path="/control" element={<ControlPanel/>} />
       <Route path="/login" element={<Login/>} />
       <Route path="/register" element={<Register/>} />
       <Route path="/order" element={<Order/>} />
