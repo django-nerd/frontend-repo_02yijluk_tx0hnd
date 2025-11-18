@@ -51,7 +51,7 @@ export default function Home(){
       {/* Full-bleed, full-screen Nimbus Hero (no 3D) */}
       <section
         ref={heroRef}
-        className="relative overflow-hidden min-h-screen flex items-stretch w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]"
+        className="relative overflow-hidden min-h-screen -mt-8 md:-mt-10 flex items-stretch w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]"
         aria-label="Nimbus hero"
         style={{ position: 'relative' }}
       >
@@ -149,7 +149,7 @@ export default function Home(){
       </section>
 
       <section className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[1,2,3].map(i=>(
+        {[1,2,3].map(i=> (
           <Card key={i} style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #FCFAFF 100%)' }}>
             <h4 className="font-semibold mb-1">Loved by teams</h4>
             <p className="text-sm text-slate-600">“The cute, soft UI makes serious work feel light. Provisioning feels magical.”</p>
