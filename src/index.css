@@ -10,6 +10,38 @@
     --font-mona: 'Mona Sans', system-ui, sans-serif;
     --font-ibm-plex: 'IBM Plex Sans', system-ui, sans-serif;
     --font-manrope: 'Manrope', system-ui, sans-serif;
+
+    /* Light theme tokens */
+    --bg: #FCFAFF;           /* soft lavender */
+    --surface: #FFFFFF;
+    --border: #F1E8FF;       /* light lilac */
+    --text: #0F172A;         /* slate-900 */
+    --muted: #6B7280;        /* gray-500 */
+    --primary: #A78BFA;      /* violet-400 */
+    --primaryDark: #8B5CF6;  /* violet-500 */
+    --accent: #34D399;       /* emerald-400 */
+    --bubblegum: #F472B6;    /* pink-400 */
+    --sky: #60A5FA;          /* blue-400 */
+    --lemon: #FBBF24;        /* amber-400 */
+
+    --header-glass: rgba(255,255,255,0.7);
+  }
+
+  .dark {
+    /* Dark theme tokens */
+    --bg: #0B1020;           /* deep navy */
+    --surface: #0F172A;      /* slate-900 */
+    --border: #1F2A44;       /* dark indigo-slate mix */
+    --text: #E5E7EB;         /* gray-200 */
+    --muted: #9CA3AF;        /* gray-400 */
+    --primary: #8B5CF6;      /* keep vibrancy */
+    --primaryDark: #7C3AED;  /* slightly deeper */
+    --accent: #34D399;
+    --bubblegum: #F472B6;
+    --sky: #60A5FA;
+    --lemon: #FBBF24;
+
+    --header-glass: rgba(2,6,23,0.6); /* near-slate with blur */
   }
 
   html {
@@ -19,6 +51,8 @@
 
   body {
     @apply antialiased;
+    background: var(--bg);
+    color: var(--text);
   }
 }
 

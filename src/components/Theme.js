@@ -1,16 +1,16 @@
 export const colors = {
-  // Playful Pastel palette
-  bg: '#FCFAFF',            // soft lavender background
-  surface: '#FFFFFF',
-  border: '#F1E8FF',        // light lilac border
-  text: '#0F172A',          // slate-900 (keeps readability)
-  muted: '#6B7280',         // gray-500
-  primary: '#A78BFA',       // violet-400
-  primaryDark: '#8B5CF6',   // violet-500
-  accent: '#34D399',        // emerald-400
-  bubblegum: '#F472B6',     // pink-400
-  sky: '#60A5FA',           // blue-400
-  lemon: '#FBBF24',         // amber-400
+  // CSS variable-driven theme (light/dark)
+  bg: 'var(--bg)',
+  surface: 'var(--surface)',
+  border: 'var(--border)',
+  text: 'var(--text)',
+  muted: 'var(--muted)',
+  primary: 'var(--primary)',
+  primaryDark: 'var(--primaryDark)',
+  accent: 'var(--accent)',
+  bubblegum: 'var(--bubblegum)',
+  sky: 'var(--sky)',
+  lemon: 'var(--lemon)',
 }
 
 export const radii = {
