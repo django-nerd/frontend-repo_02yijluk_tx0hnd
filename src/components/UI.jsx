@@ -12,16 +12,16 @@ export const Button = ({variant='primary', className='', children, style={}, ...
       style: { backgroundColor: colors.primary }
     },
     secondary: {
-      class: `text-[${colors.text}] border hover:bg-[${colors.bg}]`,
-      style: { backgroundColor: colors.surface, borderColor: colors.border }
+      class: `transition-colors`,
+      style: { color: colors.text, backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }
     },
     ghost: {
-      class: `text-[${colors.text}] hover:bg-[${colors.bg}]`,
-      style: { backgroundColor: 'transparent' }
+      class: `transition-colors`,
+      style: { color: colors.text, backgroundColor: 'transparent' }
     },
     outline: {
-      class: `text-[${colors.text}] hover:bg-[${colors.bg}]`,
-      style: { backgroundColor: 'transparent', border: `1px solid ${colors.border}` }
+      class: `transition-colors`,
+      style: { color: colors.text, backgroundColor: 'transparent', border: `1px solid ${colors.border}` }
     },
     destructive: {
       class: `text-white hover:opacity-90`,
@@ -37,10 +37,9 @@ export const Button = ({variant='primary', className='', children, style={}, ...
   return (
     <button
       {...props}
-      style={{ ...v.style, ...style }}
+      style={{ ...v.style, ...style, borderRadius: radii.base }}
       className={cn(
-        `rounded-[${radii.base}] px-4 py-2 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[${colors.primary}] focus-visible:ring-offset-2`,
-        v.class,
+        `px-4 py-2 focus:outline-none focus-visible:ring-2`,
         className
       )}
     >
@@ -50,32 +49,55 @@ export const Button = ({variant='primary', className='', children, style={}, ...
 }
 
 export const Card = ({className='', children, style={}}) => (
-  <div style={style} className={cn(`rounded-[${radii.base}] bg-[${colors.surface}] border border-[${colors.border}] shadow-[0_1px_0_rgba(17,24,39,0.04),0_8px_24px_rgba(167,139,250,0.08)] p-4`, className)}>
+  <div style={{ backgroundColor: colors.surface, borderColor: colors.border, ...style, borderWidth: 1, borderStyle:'solid', borderRadius: radii.base }} className={cn(`shadow-[0_1px_0_rgba(17,24,39,0.04),0_8px_24px_rgba(167,139,250,0.08)] p-4`, className)}>
     {children}
   </div>
 )
 
 export const Input = forwardRef(function Input({className='', style={}, ...props}, ref){
   return (
-    <input ref={ref} {...props} style={{ backgroundColor: colors.surface, borderColor: colors.border, ...style }} className={cn(`w-full rounded-[${radii.base}] border focus:ring-2 focus:ring-[${colors.primary}]/20 focus:border-[${colors.primary}] outline-none px-3 py-2 text-sm placeholder:text-slate-400`, className)} />
+    <input ref={ref} {...props} style={{ backgroundColor: colors.surface, borderColor: colors.border, color: colors.text, ...style, borderWidth: 1, borderStyle:'solid', borderRadius: radii.base }} className={cn(`w-full outline-none px-3 py-2 text-sm placeholder:text-slate-400`, className)} />
   )}
 )
 
 export const Select = ({className='', children, style={}, ...props}) => (
-  <select {...props} style={{ backgroundColor: colors.surface, borderColor: colors.border, ...style }} className={cn(`w-full rounded-[${radii.base}] border focus:ring-2 focus:ring-[${colors.primary}]/20 focus:border-[${colors.primary}] outline-none px-3 py-2 text-sm`, className)}>
+  <select {...props} style={{ backgroundColor: colors.surface, borderColor: colors.border, color: colors.text, ...style, borderWidth: 1, borderStyle:'solid', borderRadius: radii.base }} className={cn(`w-full outline-none px-3 py-2 text-sm`, className)}>
     {children}
   </select>
 )
 
 export const Textarea = ({className='', style={}, ...props}) => (
-  <textarea {...props} style={{ backgroundColor: colors.surface, borderColor: colors.border, ...style }} className={cn(`w-full rounded-[${radii.base}] border focus:ring-2 focus:ring-[${colors.primary}]/20 focus:border-[${colors.primary}] outline-none px-3 py-2 text-sm`, className)} />
+  <textarea {...props} style={{ backgroundColor: colors.surface, borderColor: colors.border, color: colors.text, ...style, borderWidth: 1, borderStyle:'solid', borderRadius: radii.base }} className={cn(`w-full outline-none px-3 py-2 text-sm`, className)} />
 )
 
-export const Badge = ({color='muted', children}) => (
-  <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-    color==='muted' && 'bg-pink-50 text-pink-700 border border-pink-100',
-    color==='blue' && 'bg-sky-100 text-sky-800 border border-sky-200',
-    color==='green' && 'bg-emerald-100 text-emerald-800 border border-emerald-200',
-    color==='yellow' && 'bg-amber-100 text-amber-800 border border-amber-200',
-  )}>{children}</span>
-)
+export const Badge = ({color='muted', children}) => {
+  // Soft pastel badges that adapt to theme tokens
+  const styles = {
+    muted: {
+      bg: 'rgba(244,114,182,0.15)', // bubblegum wash
+      text: colors.text,
+      border: 'rgba(244,114,182,0.3)'
+    },
+    blue: {
+      bg: 'rgba(96,165,250,0.15)',
+      text: colors.text,
+      border: 'rgba(96,165,250,0.35)'
+    },
+    green: {
+      bg: 'rgba(52,211,153,0.18)',
+      text: colors.text,
+      border: 'rgba(52,211,153,0.35)'
+    },
+    yellow: {
+      bg: 'rgba(251,191,36,0.18)',
+      text: colors.text,
+      border: 'rgba(251,191,36,0.35)'
+    },
+  }
+  const s = styles[color] || styles.muted
+  return (
+    <span style={{ backgroundColor: s.bg, color: s.text, borderColor: s.border, borderWidth:1, borderStyle:'solid', borderRadius: 999 }} className={cn('inline-flex items-center px-2.5 py-0.5 text-xs font-medium')}>
+      {children}
+    </span>
+  )
+}

@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import Layout from '../components/Layout'
 import { Button, Input, Card } from '../components/UI'
+import { colors } from '../components/Theme'
 
 function AuthShell({title, subtitle, children}){
   return (
     <Layout>
       <div className="min-h-[70vh] grid grid-cols-1 place-items-center">
         <Card className="w-full max-w-sm p-6">
-          <h1 className="text-xl font-semibold mb-1">{title}</h1>
-          <p className="text-sm text-slate-600 mb-6">{subtitle}</p>
+          <h1 className="text-xl font-semibold mb-1" style={{ color: colors.text }}>{title}</h1>
+          <p className="text-sm mb-6" style={{ color: colors.muted }}>{subtitle}</p>
           {children}
         </Card>
       </div>
@@ -20,14 +21,15 @@ function PasswordField({id,label,value,onChange,autoComplete}){
   const [show,setShow] = useState(false)
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium" htmlFor={id}>{label}</label>
+      <label className="text-sm font-medium" htmlFor={id} style={{ color: colors.text }}>{label}</label>
       <div className="relative">
         <Input id={id} type={show? 'text':'password'} autoComplete={autoComplete} placeholder="********" value={value} onChange={onChange} aria-label={label} />
         <button
           type="button"
           onClick={()=>setShow(s=>!s)}
           aria-label={show? 'Hide password':'Show password'}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-800 text-xs px-2 py-1 rounded-[6px] hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-xs px-2 py-1 rounded-[6px] focus:outline-none focus-visible:ring-2"
+          style={{ color: colors.muted, backgroundColor: 'transparent' }}
         >
           {show? 'Hide':'Show'}
         </button>
@@ -76,19 +78,19 @@ export function Login(){
     <AuthShell title="Sign in" subtitle="Access your account">
       <form onSubmit={onSubmit} className="space-y-4" aria-label="Sign in form">
         <div className="space-y-1.5">
-          <label className="text-sm font-medium" htmlFor="email">Email</label>
+          <label className="text-sm font-medium" htmlFor="email" style={{ color: colors.text }}>Email</label>
           <Input id="email" type="email" autoComplete="email" placeholder="you@company.com" value={email} onChange={e=>setEmail(e.target.value)} required />
         </div>
         <PasswordField id="password" label="Password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete="current-password" />
-        {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
+        {error && <p className="text-sm" style={{ color: '#EF4444' }} role="alert">{error}</p>}
         <Button type="submit" className="w-full" variant="candy" disabled={loading} aria-busy={loading} aria-disabled={loading}>{loading?'Signing in…':'Sign in'}</Button>
         <div className="relative flex items-center justify-center my-2">
-          <span className="h-px bg-gray-200 w-full" aria-hidden="true" />
-          <span className="px-2 text-xs text-slate-500">or</span>
-          <span className="h-px bg-gray-200 w-full" aria-hidden="true" />
+          <span className="h-px w-full" style={{ backgroundColor: colors.border }} aria-hidden="true" />
+          <span className="px-2 text-xs" style={{ color: colors.muted }}>or</span>
+          <span className="h-px w-full" style={{ backgroundColor: colors.border }} aria-hidden="true" />
         </div>
         <SocialButtons />
-        <p className="text-sm text-slate-600">No account? <a href="/register" className="text-sky-600 hover:underline">Create one</a></p>
+        <p className="text-sm" style={{ color: colors.muted }}>No account? <a href="/register" style={{ color: 'var(--sky)' }} className="hover:underline">Create one</a></p>
       </form>
     </AuthShell>
   )
@@ -125,23 +127,23 @@ export function Register(){
     <AuthShell title="Create account" subtitle="Start managing your services">
       <form onSubmit={onSubmit} className="space-y-4" aria-label="Register form">
         <div className="space-y-1.5">
-          <label className="text-sm font-medium" htmlFor="name">Full name</label>
+          <label className="text-sm font-medium" htmlFor="name" style={{ color: colors.text }}>Full name</label>
           <Input id="name" placeholder="Jane Doe" value={name} onChange={e=>setName(e.target.value)} required />
         </div>
         <div className="space-y-1.5">
-          <label className="text-sm font-medium" htmlFor="email">Email</label>
+          <label className="text-sm font-medium" htmlFor="email" style={{ color: colors.text }}>Email</label>
           <Input id="email" type="email" autoComplete="email" placeholder="you@company.com" value={email} onChange={e=>setEmail(e.target.value)} required />
         </div>
         <PasswordField id="password" label="Password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete="new-password" />
-        {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
+        {error && <p className="text-sm" style={{ color: '#EF4444' }} role="alert">{error}</p>}
         <Button type="submit" className="w-full" variant="candy" disabled={loading} aria-busy={loading} aria-disabled={loading}>{loading?'Creating…':'Create account'}</Button>
         <div className="relative flex items-center justify-center my-2">
-          <span className="h-px bg-gray-200 w-full" aria-hidden="true" />
-          <span className="px-2 text-xs text-slate-500">or</span>
-          <span className="h-px bg-gray-200 w-full" aria-hidden="true" />
+          <span className="h-px w-full" style={{ backgroundColor: colors.border }} aria-hidden="true" />
+          <span className="px-2 text-xs" style={{ color: colors.muted }}>or</span>
+          <span className="h-px w-full" style={{ backgroundColor: colors.border }} aria-hidden="true" />
           </div>
         <SocialButtons />
-        <p className="text-sm text-slate-600">Already have an account? <a href="/login" className="text-sky-600 hover:underline">Sign in</a></p>
+        <p className="text-sm" style={{ color: colors.muted }}>Already have an account? <a href="/login" style={{ color: 'var(--sky)' }} className="hover:underline">Sign in</a></p>
       </form>
     </AuthShell>
   )
