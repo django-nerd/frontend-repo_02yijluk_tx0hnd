@@ -26,7 +26,7 @@ export default function Layout({children}){
       className="min-h-screen"
       style={{
         background:
-          'radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,0.14), transparent), radial-gradient(800px 400px at -10% 10%, rgba(244,114,182,0.12), transparent)',
+          'radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,0.12), transparent), radial-gradient(800px 400px at -10% 10%, rgba(244,114,182,0.10), transparent)',
         backgroundColor: colors.bg,
         color: colors.text,
       }}
@@ -44,38 +44,22 @@ export default function Layout({children}){
             Nimbus
           </Link>
           <nav className="hidden md:flex items-center gap-1">
-            <NavLink
-              to="/"
-              className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}]`}
-              style={({isActive})=>({
-                color: colors.text,
-                backgroundColor: isActive ? 'rgba(244,114,182,0.12)' : 'transparent'
-              })}
-            >Home</NavLink>
-            <NavLink
-              to="/dashboard"
-              className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}]`}
-              style={({isActive})=>({
-                color: colors.text,
-                backgroundColor: isActive ? 'rgba(167,139,250,0.14)' : 'transparent'
-              })}
-            >Dashboard</NavLink>
-            <NavLink
-              to="/order"
-              className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}]`}
-              style={({isActive})=>({
-                color: colors.text,
-                backgroundColor: isActive ? 'rgba(251,191,36,0.14)' : 'transparent'
-              })}
-            >Order</NavLink>
-            <NavLink
-              to="/tos"
-              className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}]`}
-              style={({isActive})=>({
-                color: colors.text,
-                backgroundColor: isActive ? 'rgba(96,165,250,0.14)' : 'transparent'
-              })}
-            >TOS</NavLink>
+            {[
+              { to: '/', label: 'Home', wash: 'rgba(244,114,182,0.12)' },
+              { to: '/dashboard', label: 'Dashboard', wash: 'rgba(167,139,250,0.12)' },
+              { to: '/order', label: 'Order', wash: 'rgba(251,191,36,0.12)' },
+              { to: '/tos', label: 'TOS', wash: 'rgba(96,165,250,0.12)' },
+            ].map(({to, label, wash}) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}] transition-colors`}
+                style={({isActive})=>({
+                  color: colors.text,
+                  backgroundColor: isActive ? wash : 'transparent'
+                })}
+              >{label}</NavLink>
+            ))}
           </nav>
           <div className="flex items-center gap-2">
             <button
@@ -87,8 +71,8 @@ export default function Layout({children}){
             >
               {isDark ? 'Light' : 'Dark'}
             </button>
-            <Link to="/login" className="px-3 py-2 text-sm text-white" style={{ backgroundColor: colors.bubblegum, borderRadius: radii.pill }}>Login</Link>
-            <Link to="/register" className="px-3 py-2 text-sm border" style={{ borderColor: colors.border, borderRadius: radii.pill, color: colors.text }}>Register</Link>
+            <Link to="/login" className="px-3 py-2 text-sm text-white elev-1 hover:elev-2" style={{ backgroundColor: colors.bubblegum, borderRadius: radii.pill }}>Login</Link>
+            <Link to="/register" className="px-3 py-2 text-sm border hover-wash-primary" style={{ borderColor: colors.border, borderRadius: radii.pill, color: colors.text }}>Register</Link>
           </div>
         </div>
       </header>
