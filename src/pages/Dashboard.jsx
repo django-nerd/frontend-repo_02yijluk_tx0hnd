@@ -1,9 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
 import Layout from '../components/Layout'
-import { Button, Card, Badge, Input } from '../components/UI'
+import { Button, Card, Badge, Input, Select, Textarea } from '../components/UI'
+import { colors, radii } from '../components/Theme'
 import { SalesLine, UnitsBar } from '../components/Charts'
 
 const ROLES = ['reseller','admin','investor','engineer','high_admin','owner']
+
+function SectionTitle({id, emoji, title, hint}){
+  return (
+    <div id={id} className="flex items-center justify-between mb-3">
+      <h2 className="text-lg font-semibold flex items-center gap-2">
+        <span aria-hidden className="text-base">{emoji}</span>
+        {title}
+      </h2>
+      {hint && <span className="text-xs text-slate-500">{hint}</span>}
+    </div>
+  )
+}
 
 export default function Dashboard(){
   const baseUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
@@ -16,8 +29,73 @@ export default function Dashboard(){
   const [autoPay,setAutoPay] = useState({loading:true, enabled:true})
   const [withdraw,setWithdraw] = useState({amount:'', loading:false, result:null, error:''})
 
-  const canViewLogs = ['admin','investor','engineer','owner'].includes(role)
-  const canToggleAutoPay = ['admin','high_admin','owner'].includes(role)
+  // Visibility by role
+  const canViewLogs = ['admin','investor','engineer','high_admin','owner'].includes(role)
+  const canUseAutoPayToggle = ['admin','high_admin','owner'].includes(role)
+  const showAutoPayStatus = canUseAutoPayToggle || role==='engineer'
+  const showProducts = ['admin','high_admin','owner'].includes(role)
+  const showPaymentsMenu = ['admin','high_admin','owner'].includes(role)
+  const showSystem = ['engineer','owner'].includes(role)
+  const showUsersRoles = ['owner'].includes(role)
+
+  // Sidebar items by role
+  const sidebarItems = useMemo(()=>{
+    switch(role){
+      case 'reseller':
+        return [
+          {id:'overview', label:'Overview'},
+          {id:'sales', label:'Penjualan'},
+          {id:'withdrawals', label:'Pencairan'},
+          {id:'payments', label:'Pembayaran'}, // keep anchor but will be hidden card if not allowed
+          {id:'settings', label:'Settings'},
+        ]
+      case 'admin':
+        return [
+          {id:'overview', label:'Overview'},
+          {id:'sales', label:'Penjualan'},
+          {id:'payments', label:'Pembayaran'},
+          {id:'withdrawals', label:'Pencairan'},
+          {id:'products', label:'Produk'},
+          {id:'logs', label:'Logs'},
+        ]
+      case 'investor':
+        return [
+          {id:'overview', label:'Overview'},
+          {id:'sales', label:'Penjualan'},
+          {id:'logs', label:'Logs'},
+        ]
+      case 'engineer':
+        return [
+          {id:'overview', label:'Overview'},
+          {id:'system', label:'Sistem'},
+          {id:'logs', label:'Logs'},
+        ]
+      case 'high_admin':
+        return [
+          {id:'overview', label:'Overview'},
+          {id:'sales', label:'Penjualan'},
+          {id:'payments', label:'Pembayaran'},
+          {id:'withdrawals', label:'Pencairan'},
+          {id:'products', label:'Produk'},
+          {id:'logs', label:'Logs'},
+          {id:'settings', label:'Settings'},
+        ]
+      case 'owner':
+        return [
+          {id:'overview', label:'Overview'},
+          {id:'sales', label:'Penjualan'},
+          {id:'payments', label:'Pembayaran'},
+          {id:'withdrawals', label:'Pencairan'},
+          {id:'products', label:'Produk'},
+          {id:'system', label:'Sistem'},
+          {id:'users', label:'Users/Roles'},
+          {id:'logs', label:'Logs'},
+          {id:'settings', label:'Settings'},
+        ]
+      default:
+        return []
+    }
+  },[role])
 
   useEffect(()=>{(async()=>{
     try{
@@ -26,17 +104,22 @@ export default function Dashboard(){
       setMetrics(m)
       setSeries(s.series||[])
     }catch(e){
-      setMetrics({cards:[]}); setSeries([])
+      setMetrics({cards:[
+        {label:'Total Penjualan', value:'–'},
+        {label:'Saldo', value:'–'},
+        {label:'Konversi', value:'–'},
+      ]}); setSeries([])
     }
   })()},[])
 
   useEffect(()=>{(async()=>{
+    if(!showAutoPayStatus) return
     try{
       setAutoPay(a=>({...a,loading:true}))
       const ap = await fetch(`${baseUrl}/api/settings/auto-payment`).then(r=>r.json())
       setAutoPay({loading:false, enabled: !!ap.enabled})
     }catch(e){ setAutoPay({loading:false, enabled:true}) }
-  })()},[])
+  })()},[showAutoPayStatus])
 
   async function toggleAutoPayment(){
     try{
@@ -63,139 +146,442 @@ export default function Dashboard(){
     }
   }
 
+  // Helpers for playful chips
+  function Chip({active, children, onClick}){
+    return (
+      <button onClick={onClick} className={`px-3 py-1.5 rounded-[${radii.pill}] border text-sm transition-colors ${active? 'bg-pink-100 border-pink-200 text-slate-900':'bg-white border-[rgba(241,232,255,1)] hover:bg-violet-50'}`}>{children}</button>
+    )
+  }
+
   return (
     <Layout>
+      {/* Top controls */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <Badge color="muted">Playful Pastel</Badge>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
             <span className="text-sm">Role</span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" role="tablist" aria-label="Select role">
               {ROLES.map(r=> (
-                <button key={r} onClick={()=>setRole(r)} className={`px-3 py-1.5 rounded-[6px] border ${role===r? 'bg-sky-100 border-sky-200':'bg-white border-gray-200 hover:bg-slate-50'}`}>{r.replace('_',' ')}</button>
+                <Chip key={r} active={role===r} onClick={()=>setRole(r)}>{r.replace('_',' ')}</Chip>
               ))}
             </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm">Email</span>
-            <Input value={email} onChange={e=>setEmail(e.target.value)} className="w-56"/>
+            <Input aria-label="Email" value={email} onChange={e=>setEmail(e.target.value)} className="w-56"/>
           </div>
         </div>
       </div>
 
-      <section className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {metrics.cards.map((c,i)=> (
-          <Card key={i}>
-            <p className="text-sm text-slate-600">{c.label}</p>
-            <p className="text-2xl font-bold">{typeof c.value==='number' ? c.value.toLocaleString() : c.value}</p>
-            {typeof c.trend==='number' && <p className={`text-xs ${c.trend>=0?'text-emerald-600':'text-rose-600'}`}>{c.trend}%</p>}
-          </Card>
-        ))}
-      </section>
-
-      <section className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold">Sales (30d)</h3>
-            <div className="flex items-center gap-2 text-sm">
-              {['gross','net','units'].map(k=> (
-                <button key={k} onClick={()=>setMetricKey(k)} className={`px-2 py-1 rounded-[6px] border ${metricKey===k? 'bg-pink-100 border-pink-200':'bg-white border-gray-200 hover:bg-slate-50'}`}>{k}</button>
-              ))}
-            </div>
-          </div>
-          <SalesLine data={series} metric={metricKey==='units'? 'gross': metricKey} />
-          <div className="mt-2">
-            <UnitsBar data={series} />
-          </div>
-        </Card>
-        <Card>
-          <h3 className="font-semibold mb-2">Auto Payment</h3>
-          <div className="flex items-center justify-between text-sm">
-            <p>Status</p>
-            <Badge color={autoPay.enabled? 'green':'yellow'}>{autoPay.loading? 'Loading…' : (autoPay.enabled? 'On':'Off')}</Badge>
-          </div>
-          {canToggleAutoPay && (
-            <div className="mt-3">
-              <Button variant="secondary" className="w-full" disabled={autoPay.loading} onClick={toggleAutoPayment}>
-                {autoPay.loading? 'Working…' : (autoPay.enabled? 'Turn Off Auto-Capture' : 'Turn On Auto-Capture')}
-              </Button>
-            </div>
-          )}
-          <div className="mt-3 text-sm text-slate-600">
-            <p>Last payments</p>
-            <ul className="list-disc ml-4">
-              <li>INV-1042 • PayPal • $12.49 • Success</li>
-              <li>INV-1041 • Robux • $6.00 • Success</li>
-            </ul>
-          </div>
-        </Card>
-      </section>
-
-      <section className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2">
-          <h3 className="font-semibold mb-2">Sales table</h3>
-          <div className="overflow-auto">
-            <table className="min-w-full text-sm">
-              <thead className="sticky top-0 bg-white">
-                <tr>
-                  {['Date/Time','Product','Reseller','Buyer','Price','Discount','Status','Method'].map(h=> <th key={h} className="text-left p-2">{h}</th> )}
-                </tr>
-              </thead>
-              <tbody>
-                {series.slice(0,12).map((s,i)=> (
-                  <tr key={i} className="border-t">
-                    <td className="p-2">{s.date} 12:{(10+i).toString().padStart(2,'0')}</td>
-                    <td className="p-2">VPS Nano</td>
-                    <td className="p-2">reseller{i%4}@site.com</td>
-                    <td className="p-2">user****@mail.com</td>
-                    <td className="p-2">${(s.gross/100).toFixed(2)}</td>
-                    <td className="p-2">-${(s.gross/1000).toFixed(2)}</td>
-                    <td className="p-2"><Badge color={i%3===0?'yellow':'green'}>{i%3===0?'Pending':'Paid'}</Badge></td>
-                    <td className="p-2">{i%2===0?'PayPal':'Robux'}</td>
-                  </tr>
+      {/* Layout: sidebar + content */}
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* Sidebar */}
+        <aside className="lg:col-span-3">
+          <Card className="p-0">
+            <nav aria-label="Dashboard sections" className="p-2">
+              <ul className="space-y-1">
+                {sidebarItems.map(it=> (
+                  <li key={it.id}>
+                    <a href={`#${it.id}`} className={`flex items-center justify-between px-3 py-2 rounded-[${radii.pill}] hover:bg-pink-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[${colors.primary}]`}>{it.label}<span aria-hidden>›</span></a>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-        <Card>
-          <h3 className="font-semibold mb-2">Withdrawals</h3>
-          {role==='reseller' && (
-            <div className="rounded-[6px] p-3 bg-slate-50 text-sm border border-gray-200">Reseller T+5 payout policy applies. Dana cair 5 hari setelah pengajuan.</div>
-          )}
-          {role==='high_admin' && (
-            <div className="rounded-[6px] p-3 bg-slate-50 text-sm border border-gray-200">High admin dapat mencairkan dana secara langsung (instan).</div>
-          )}
-          <div className="mt-3 space-y-2">
-            <Input placeholder="Amount" value={withdraw.amount} onChange={e=>setWithdraw(w=>({...w, amount:e.target.value}))} />
-            <Button onClick={submitWithdrawal} disabled={withdraw.loading}>{withdraw.loading? 'Submitting…':'Request Withdrawal'}</Button>
-            {withdraw.error && <p className="text-sm text-red-600">{withdraw.error}</p>}
-            {withdraw.result && (
-              <div className="text-sm text-slate-700 space-y-1">
-                <p>Status: <span className="font-medium">{withdraw.result.status}</span></p>
-                {withdraw.result.scheduled_date && <p>Scheduled: {new Date(withdraw.result.scheduled_date).toLocaleString()}</p>}
+              </ul>
+            </nav>
+          </Card>
+        </aside>
+
+        {/* Main content */}
+        <div className="lg:col-span-9 space-y-8">
+          {/* Overview / Metrics */}
+          <section>
+            <SectionTitle id="overview" emoji="🎈" title="Overview" hint={roleLabel(role)} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+              {metrics.cards.map((c,i)=> (
+                <Card key={i}>
+                  <p className="text-sm text-slate-600">{c.label}</p>
+                  <p className="text-2xl font-bold">{typeof c.value==='number' ? c.value.toLocaleString() : c.value}</p>
+                  {typeof c.trend==='number' && <p className={`text-xs ${c.trend>=0?'text-emerald-600':'text-rose-600'}`}>{c.trend}%</p>}
+                </Card>
+              ))}
+              {showAutoPayStatus && (
+                <Card>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-600">Auto Payment</p>
+                      <p className="text-2xl font-bold">{autoPay.loading? '...' : (autoPay.enabled? 'On' : 'Off')}</p>
+                    </div>
+                    <Badge color={autoPay.enabled? 'green':'yellow'}>{autoPay.loading? 'Loading…' : (autoPay.enabled? 'Aktif':'Nonaktif')}</Badge>
+                  </div>
+                  {canUseAutoPayToggle && (
+                    <Button variant="secondary" className="mt-3 w-full" disabled={autoPay.loading} onClick={toggleAutoPayment}>
+                      {autoPay.loading? 'Working…' : (autoPay.enabled? 'Turn Off Auto-Capture' : 'Turn On Auto-Capture')}
+                    </Button>
+                  )}
+                  {role==='engineer' && (
+                    <p className="mt-2 text-sm text-slate-600">Gateway & webhook health di bagian Sistem.</p>
+                  )}
+                </Card>
+              )}
+            </div>
+          </section>
+
+          {/* Charts */}
+          <section>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+              <Card className="xl:col-span-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold">Sales (30d)</h3>
+                  <div className="flex items-center gap-2 text-sm" role="tablist" aria-label="Metric">
+                    {['gross','net','units'].map(k=> (
+                      <Chip key={k} active={metricKey===k} onClick={()=>setMetricKey(k)}>{k}</Chip>
+                    ))}
+                  </div>
+                </div>
+                <SalesLine data={series} metric={metricKey==='units'? 'gross': metricKey} />
+                <div className="mt-2">
+                  <UnitsBar data={series} />
+                </div>
+              </Card>
+              {showAutoPayStatus && (
+                <Card>
+                  <h3 className="font-semibold mb-2">Recent Payments</h3>
+                  <ul className="text-sm space-y-2">
+                    <li className="flex items-center justify-between"><span>INV-1042 • PayPal</span><Badge color="green">Success</Badge></li>
+                    <li className="flex items-center justify-between"><span>INV-1041 • Robux</span><Badge color="green">Success</Badge></li>
+                    <li className="flex items-center justify-between"><span>INV-1040 • Card</span><Badge color="yellow">Pending</Badge></li>
+                  </ul>
+                </Card>
+              )}
+            </div>
+          </section>
+
+          {/* Sales section */}
+          <section>
+            <SectionTitle id="sales" emoji="🍬" title="Penjualan" hint={salesHint(role)} />
+
+            {/* Filters for non-reseller roles */}
+            {['admin','high_admin','owner','investor'].includes(role) && (
+              <Card className="mb-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                  <Input aria-label="Tanggal" placeholder="Tanggal (range)"/>
+                  <Input aria-label="Reseller" placeholder="Reseller"/>
+                  <Input aria-label="Produk" placeholder="Produk"/>
+                  <Select aria-label="Status"><option>Status</option><option>Paid</option><option>Pending</option><option>Failed</option></Select>
+                  <Select aria-label="Metode"><option>Metode</option><option>PayPal</option><option>Robux</option><option>Card</option></Select>
+                  <div className="flex items-center gap-2">
+                    <Button variant="secondary">Filter</Button>
+                    {['admin','high_admin','owner'].includes(role) && (
+                      <Button variant="candy">Export CSV</Button>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* CTA for reseller */}
+            {role==='reseller' && (
+              <div className="flex items-center gap-2 mb-2">
+                <Button variant="candy">Tambah Penjualan</Button>
+                <Button variant="secondary" onClick={()=>document.getElementById('withdrawals')?.scrollIntoView({behavior:'smooth'})}>Ajukan Pencairan</Button>
               </div>
             )}
-          </div>
-        </Card>
-      </section>
 
-      {canViewLogs && (
-        <section className="mt-6">
-          <Card>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold">Logs</h3>
-              <div className="flex items-center gap-2 text-sm">
-                <Input placeholder="Search" className="w-48" aria-label="Search logs" />
-                <Button variant="secondary">Export CSV</Button>
+            <Card>
+              <div className="overflow-auto" role="region" aria-label="Tabel Penjualan">
+                <table className="min-w-full text-sm">
+                  <thead className="sticky top-0 bg-white">
+                    <tr>
+                      {['Date/Time','Product','Reseller','Buyer','Price','Discount','Status','Method'].map(h=> <th key={h} className="text-left p-2">{h}</th> )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {series.slice(0,12).map((s,i)=> (
+                      <tr key={i} className="border-t">
+                        <td className="p-2">{s.date} 12:{(10+i).toString().padStart(2,'0')}</td>
+                        <td className="p-2">VPS Nano</td>
+                        <td className="p-2">{role==='reseller'? email : `reseller${i%4}@site.com`}</td>
+                        <td className="p-2">user****@mail.com</td>
+                        <td className="p-2">${(s.gross/100).toFixed(2)}</td>
+                        <td className="p-2">-${(s.gross/1000).toFixed(2)}</td>
+                        <td className="p-2"><Badge color={i%3===0?'yellow':'green'}>{i%3===0?'Pending':'Paid'}</Badge></td>
+                        <td className="p-2">{i%2===0?'PayPal':'Robux'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+              {['admin','high_admin','owner'].includes(role) && (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Button variant="secondary">Kelola Harga</Button>
+                  <Button variant="candy">Export CSV</Button>
+                </div>
+              )}
+            </Card>
+          </section>
+
+          {/* Withdrawals */}
+          <section>
+            <SectionTitle id="withdrawals" emoji="💸" title="Pencairan" hint={withdrawHint(role)} />
+            {role==='reseller' && (
+              <div className={`rounded-[${radii.base}] p-3 border`} style={{backgroundColor:'#FFF7ED', borderColor:'#FDE68A'}}>
+                <p className="text-sm">Kebijakan T+5 berlaku. Dana cair 5 hari setelah pengajuan.</p>
+              </div>
+            )}
+
+            <div className="mt-3 grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Left: form or info */}
+              <Card className="lg:col-span-1">
+                {role==='reseller' && (
+                  <div className="space-y-2">
+                    <Input placeholder="Jumlah (IDR)" value={withdraw.amount} onChange={e=>setWithdraw(w=>({...w, amount:e.target.value}))} />
+                    <Textarea placeholder="Catatan (opsional)"/>
+                    <Button onClick={submitWithdrawal} disabled={withdraw.loading}>{withdraw.loading? 'Submitting…':'Ajukan Pencairan'}</Button>
+                    {withdraw.error && <p className="text-sm text-red-600">{withdraw.error}</p>}
+                    {withdraw.result && (
+                      <div className="text-sm text-slate-700 space-y-1">
+                        <p>Status: <span className="font-medium">{withdraw.result.status}</span></p>
+                        {withdraw.result.scheduled_date && <p>Estimasi Cair: {new Date(withdraw.result.scheduled_date).toLocaleString()}</p>}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {['admin'].includes(role) && (
+                  <p className="text-sm text-slate-600">Lihat pengajuan untuk review. Approval mengikuti kebijakan T+5.</p>
+                )}
+                {['high_admin','owner'].includes(role) && (
+                  <p className="text-sm text-slate-600">Anda dapat melakukan cairkan instan, approve/reject, dan unggah bukti pembayaran.</p>
+                )}
+              </Card>
+
+              {/* Right: table */}
+              <Card className="lg:col-span-2">
+                <div className="overflow-auto" role="region" aria-label="Daftar Pengajuan Pencairan">
+                  <table className="min-w-full text-sm">
+                    <thead className="sticky top-0 bg-white">
+                      <tr>
+                        {['Tanggal','Reseller','Amount','Estimasi Cair','Status','Bukti','Aksi'].map(h=> <th key={h} className="text-left p-2">{h}</th> )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from({length:6}).map((_,i)=> (
+                        <tr key={i} className="border-t">
+                          <td className="p-2 whitespace-nowrap">2025-01-{(10+i).toString().padStart(2,'0')}</td>
+                          <td className="p-2">reseller{i}@site.com</td>
+                          <td className="p-2">Rp {((i+1)*250_000).toLocaleString('id-ID')}</td>
+                          <td className="p-2 whitespace-nowrap">2025-01-{(15+i).toString().padStart(2,'0')}</td>
+                          <td className="p-2"><Badge color={i%3===0?'yellow':'green'}>{i%3===0?'Pending':'Approved'}</Badge></td>
+                          <td className="p-2"><Button variant="secondary">Lihat</Button></td>
+                          <td className="p-2">
+                            {role==='admin' && (
+                              <span className="text-slate-400 text-xs">Read-only</span>
+                            )}
+                            {['high_admin','owner'].includes(role) && (
+                              <div className="flex items-center gap-2">
+                                <Button variant="secondary">Approve</Button>
+                                <Button variant="secondary">Reject</Button>
+                                <Button variant="candy">Cairkan Sekarang</Button>
+                              </div>
+                            )}
+                            {role==='reseller' && (
+                              <span className="text-slate-400 text-xs">Menunggu verifikasi</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
             </div>
-            <LogTable baseUrl={baseUrl} />
-          </Card>
-        </section>
-      )}
+          </section>
+
+          {/* Payments / Auto Payment */}
+          {showPaymentsMenu && (
+            <section>
+              <SectionTitle id="payments" emoji="💳" title="Pembayaran" hint="Gateway & Auto-Capture" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                  <h3 className="font-semibold mb-2">Auto Payment</h3>
+                  <div className="flex items-center justify-between text-sm">
+                    <p>Status</p>
+                    <Badge color={autoPay.enabled? 'green':'yellow'}>{autoPay.loading? 'Loading…' : (autoPay.enabled? 'On':'Off')}</Badge>
+                  </div>
+                  <div className="mt-3">
+                    <Button variant="secondary" className="w-full" disabled={autoPay.loading} onClick={toggleAutoPayment}>
+                      {autoPay.loading? 'Working…' : (autoPay.enabled? 'Turn Off Auto-Capture' : 'Turn On Auto-Capture')}
+                    </Button>
+                  </div>
+                </Card>
+                <Card>
+                  <h3 className="font-semibold mb-2">Gateway Status</h3>
+                  <ul className="text-sm space-y-2">
+                    <li className="flex items-center justify-between"><span>PayPal</span><Badge color="green">Healthy</Badge></li>
+                    <li className="flex items-center justify-between"><span>Robux</span><Badge color="green">Healthy</Badge></li>
+                    <li className="flex items-center justify-between"><span>Card</span><Badge color="yellow">Degraded</Badge></li>
+                  </ul>
+                </Card>
+              </div>
+            </section>
+          )}
+
+          {/* Products (for admin/high_admin/owner) */}
+          {showProducts && (
+            <section>
+              <SectionTitle id="products" emoji="🧁" title="Produk" hint="Kelola produk & harga" />
+              <Card>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {['VPS Nano','VPS Pro','Domain .com'].map((p,i)=> (
+                    <Card key={i}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{p}</p>
+                          <p className="text-sm text-slate-600">Harga mulai Rp {(15000*(i+1)).toLocaleString('id-ID')}</p>
+                        </div>
+                        <Badge color={i%2? 'green':'blue'}>{i%2? 'Active':'Draft'}</Badge>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2">
+                        <Button variant="secondary">Edit</Button>
+                        <Button variant="candy">Kelola Harga</Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </Card>
+            </section>
+          )}
+
+          {/* System (for engineer/owner) */}
+          {showSystem && (
+            <section>
+              <SectionTitle id="system" emoji="🧩" title="Sistem" hint="Status & incident" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card>
+                  <h3 className="font-semibold">Uptime</h3>
+                  <p className="text-sm text-slate-600">99.95% • 30d</p>
+                </Card>
+                <Card>
+                  <h3 className="font-semibold">Provisioning Queue</h3>
+                  <p className="text-sm text-slate-600">3 pending • avg 12s</p>
+                </Card>
+                <Card>
+                  <h3 className="font-semibold">Webhook Status</h3>
+                  <p className="text-sm text-slate-600">PayPal OK • Robux OK • Card Delayed</p>
+                </Card>
+              </div>
+            </section>
+          )}
+
+          {/* Users/Roles (owner) */}
+          {showUsersRoles && (
+            <section>
+              <SectionTitle id="users" emoji="🫶" title="Users & Roles" hint="Role management" />
+              <Card>
+                <div className="flex flex-col md:flex-row gap-3">
+                  <div className="md:w-1/3 space-y-2">
+                    <Input placeholder="Cari pengguna"/>
+                    <ul className="space-y-1 text-sm">
+                      {['maya@site.com','irfan@site.com','lina@site.com'].map(u=> (
+                        <li key={u} className={`px-3 py-2 rounded-[${radii.base}] border hover:bg-violet-50`}>{u}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="md:flex-1 space-y-2">
+                    <p className="font-medium">Detail Pengguna</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <Input placeholder="Email" defaultValue="maya@site.com"/>
+                      <Select defaultValue="reseller"><option value="reseller">Reseller</option><option value="admin">Admin</option><option value="engineer">Engineer</option><option value="owner">Owner</option></Select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="secondary">Simpan</Button>
+                      <Button variant="destructive">Nonaktifkan</Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </section>
+          )}
+
+          {/* Logs */}
+          {canViewLogs && (
+            <section>
+              <SectionTitle id="logs" emoji="📜" title="Logs" hint={role==='investor' ? 'Read-only' : 'Full access'} />
+              <Card>
+                <div className="flex items-center justify-between mb-2">
+                  <Input placeholder="Search" className="w-48" aria-label="Search logs" />
+                  <div className="flex items-center gap-2 text-sm">
+                    <Button variant="secondary">Export CSV</Button>
+                  </div>
+                </div>
+                <LogTable baseUrl={baseUrl} />
+              </Card>
+            </section>
+          )}
+
+          {/* Settings (subset per role) */}
+          {['reseller','high_admin','owner'].includes(role) && (
+            <section>
+              <SectionTitle id="settings" emoji="⚙️" title="Settings" hint={role==='reseller'? 'Profil, notifikasi, password' : 'Produk & sistem'} />
+              <Card>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <p className="font-medium mb-1">Profil</p>
+                    <Input placeholder="Nama" defaultValue="Nimbus User"/>
+                    <Input className="mt-2" placeholder="Email" defaultValue={email}/>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">Notifikasi</p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <input id="notif-email" type="checkbox" defaultChecked className="accent-pink-400"/>
+                      <label htmlFor="notif-email">Email</label>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm mt-1">
+                      <input id="notif-telegram" type="checkbox" className="accent-violet-400"/>
+                      <label htmlFor="notif-telegram">Telegram</label>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-medium mb-1">Password</p>
+                    <Input type="password" placeholder="Password baru"/>
+                    <Button className="mt-2" variant="secondary">Update</Button>
+                  </div>
+                </div>
+              </Card>
+            </section>
+          )}
+        </div>
+      </div>
     </Layout>
   )
+}
+
+function roleLabel(role){
+  switch(role){
+    case 'reseller': return 'Reseller view: penjualan pribadi & pencairan'
+    case 'admin': return 'Admin view: seluruh reseller + pembayaran'
+    case 'investor': return 'Investor view: MRR/Revenue & logs (read-only)'
+    case 'engineer': return 'Engineer view: sistem & webhook health'
+    case 'high_admin': return 'High Admin view: kontrol pencairan instan'
+    case 'owner': return 'Owner view: full access termasuk roles & sistem'
+    default: return ''
+  }
+}
+
+function salesHint(role){
+  if(role==='reseller') return 'Tabel penjualan pribadi'
+  if(['investor'].includes(role)) return 'Read-only penjualan & filter'
+  if(['admin','high_admin','owner'].includes(role)) return 'Semua reseller, filter lengkap'
+  return ''
+}
+
+function withdrawHint(role){
+  if(role==='reseller') return 'Ajukan pencairan (T+5)'
+  if(role==='admin') return 'Review pengajuan (read-only/T+5)'
+  if(['high_admin','owner'].includes(role)) return 'Approve/Reject/Instant + upload bukti'
+  return ''
 }
 
 function LogTable({baseUrl}){
