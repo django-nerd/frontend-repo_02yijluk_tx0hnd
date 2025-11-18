@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Area, AreaChart, PieChart, Pie, Cell, CandlestickChart, Brush } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Area, AreaChart, PieChart, Pie, Cell } from 'recharts'
 
 const pastel = ['#F9A8D4','#A9F9CD','#D5F9A9','#A9D5F9','#F24AA7']
 
