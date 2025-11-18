@@ -36,8 +36,8 @@ export default function VPSDetail(){
       <div className="space-y-4" aria-label="VPS Detail">
         <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{vm.name}</h1>
-            <p className="text-sm text-slate-600">Instance • {vm.id} • {vm.region}</p>
+            <h1 className="text-2xl font-bold" style={{color: colors.text}}>{vm.name}</h1>
+            <p className="text-sm" style={{color: colors.muted}}>Instance • {vm.id} • {vm.region}</p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="secondary">Reboot</Button>
@@ -49,26 +49,26 @@ export default function VPSDetail(){
         <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <div className="flex items-center justify-between">
-              <p className="text-sm text-slate-600">Status</p>
+              <p className="text-sm" style={{color: colors.muted}}>Status</p>
               <Badge color={vm.status==='Running'? 'green':'yellow'}>{vm.status}</Badge>
             </div>
-            <div className="mt-2 text-sm space-y-1">
-              <p><span className="text-slate-500">Uptime:</span> {vm.uptime}</p>
-              <p><span className="text-slate-500">OS:</span> {vm.os}</p>
-              <p><span className="text-slate-500">Plan:</span> {vm.plan}</p>
-              <p><span className="text-slate-500">CPU/RAM:</span> {vm.cpu} / {vm.ram}</p>
-              <p><span className="text-slate-500">Disk:</span> {vm.disk}</p>
+            <div className="mt-2 text-sm space-y-1" style={{color: colors.text}}>
+              <p><span style={{color: colors.muted}}>Uptime:</span> {vm.uptime}</p>
+              <p><span style={{color: colors.muted}}>OS:</span> {vm.os}</p>
+              <p><span style={{color: colors.muted}}>Plan:</span> {vm.plan}</p>
+              <p><span style={{color: colors.muted}}>CPU/RAM:</span> {vm.cpu} / {vm.ram}</p>
+              <p><span style={{color: colors.muted}}>Disk:</span> {vm.disk}</p>
             </div>
             <div className="mt-3">
               <Button variant="candy" className="w-full">Open Console</Button>
             </div>
           </Card>
           <Card>
-            <p className="text-sm text-slate-600">Networking</p>
-            <div className="mt-2 text-sm space-y-1">
-              <p><span className="text-slate-500">IPv4:</span> {vm.ipv4}</p>
-              <p><span className="text-slate-500">IPv6:</span> {vm.ipv6}</p>
-              <p><span className="text-slate-500">SSH:</span> <code className="px-2 py-1 rounded" style={{backgroundColor: colors.bg, borderRadius: radii.base, border:`1px solid ${colors.border}`}}>{vm.ssh}</code></p>
+            <p className="text-sm" style={{color: colors.muted}}>Networking</p>
+            <div className="mt-2 text-sm space-y-1" style={{color: colors.text}}>
+              <p><span style={{color: colors.muted}}>IPv4:</span> {vm.ipv4}</p>
+              <p><span style={{color: colors.muted}}>IPv6:</span> {vm.ipv6}</p>
+              <p><span style={{color: colors.muted}}>SSH:</span> <code className="px-2 py-1 rounded" style={{backgroundColor: colors.bg, borderRadius: radii.base, border:`1px solid ${colors.border}`, color: colors.text}}>{vm.ssh}</code></p>
             </div>
             <div className="mt-3 flex items-center gap-2">
               <Button variant="secondary">Firewall</Button>
@@ -76,10 +76,10 @@ export default function VPSDetail(){
             </div>
           </Card>
           <Card>
-            <p className="text-sm text-slate-600">Snapshots</p>
-            <ul className="mt-2 text-sm space-y-1">
-              <li className="flex items-center justify-between"><span>pre-upgrade</span><span className="text-slate-500">2025-01-05</span></li>
-              <li className="flex items-center justify-between"><span>clean-install</span><span className="text-slate-500">2025-01-03</span></li>
+            <p className="text-sm" style={{color: colors.muted}}>Snapshots</p>
+            <ul className="mt-2 text-sm space-y-1" style={{color: colors.text}}>
+              <li className="flex items-center justify-between"><span>pre-upgrade</span><span style={{color: colors.muted}}>2025-01-05</span></li>
+              <li className="flex items-center justify-between"><span>clean-install</span><span style={{color: colors.muted}}>2025-01-03</span></li>
             </ul>
             <Button className="mt-3" variant="secondary">Create Snapshot</Button>
           </Card>
@@ -88,7 +88,7 @@ export default function VPSDetail(){
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <Card className="lg:col-span-2">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-base font-semibold">System Resources</h2>
+              <h2 className="text-base font-semibold" style={{color: colors.text}}>System Resources</h2>
               <div className="flex items-center gap-2">
                 <Badge color="blue">Live</Badge>
                 <Input aria-label="Time range" className="w-32" placeholder="Last 1h" />
@@ -101,7 +101,7 @@ export default function VPSDetail(){
             </div>
           </Card>
           <Card>
-            <h2 className="text-base font-semibold mb-2">Quick Actions</h2>
+            <h2 className="text-base font-semibold mb-2" style={{color: colors.text}}>Quick Actions</h2>
             <div className="grid grid-cols-2 gap-2">
               <Button variant="secondary">Reset Root</Button>
               <Button variant="secondary">Rebuild</Button>
@@ -115,7 +115,7 @@ export default function VPSDetail(){
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
-            <h2 className="text-base font-semibold mb-2">Console (Preview)</h2>
+            <h2 className="text-base font-semibold mb-2" style={{color: colors.text}}>Console (Preview)</h2>
             <div className="h-56 rounded border text-xs p-3 font-mono overflow-auto" style={{borderColor: colors.border, backgroundColor: '#0b1020', color:'#d1d5db'}} aria-label="Terminal preview">
               <div className="opacity-70">Connecting to {vm.name}...</div>
               <pre className="mt-2">{`Welcome to Ubuntu 22.04.4 LTS (GNU/Linux 5.15.0-1058-gcp x86_64)
@@ -131,12 +131,12 @@ ubuntu@${vm.name}:~$`}</pre>
             </div>
           </Card>
           <Card>
-            <h2 className="text-base font-semibold mb-2">Disks & Volumes</h2>
-            <div className="text-sm">
+            <h2 className="text-base font-semibold mb-2" style={{color: colors.text}}>Disks & Volumes</h2>
+            <div className="text-sm" style={{color: colors.text}}>
               <div className="flex items-center justify-between py-2 border-b" style={{borderColor: colors.border}}>
                 <div>
                   <p className="font-medium">/dev/sda</p>
-                  <p className="text-slate-500">Root • 40 GB</p>
+                  <p style={{color: colors.muted}}>Root • 40 GB</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="secondary">Expand</Button>
@@ -146,7 +146,7 @@ ubuntu@${vm.name}:~$`}</pre>
               <div className="flex items-center justify-between py-2">
                 <div>
                   <p className="font-medium">Volume-1</p>
-                  <p className="text-slate-500">Data • 20 GB</p>
+                  <p style={{color: colors.muted}}>Data • 20 GB</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="secondary">Mount</Button>
@@ -159,8 +159,8 @@ ubuntu@${vm.name}:~$`}</pre>
         </section>
 
         <div className="flex items-center justify-between">
-          <Link to="/control" className="text-sm underline">Back to Control Panel</Link>
-          <div className="text-xs text-slate-500">Created {vm.createdAt}</div>
+          <Link to="/control" className="text-sm underline" style={{color: colors.text}}>Back to Control Panel</Link>
+          <div className="text-xs" style={{color: colors.muted}}>Created {vm.createdAt}</div>
         </div>
       </div>
     </Layout>

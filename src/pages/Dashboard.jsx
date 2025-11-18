@@ -9,11 +9,11 @@ const ROLES = ['reseller','admin','investor','engineer','high_admin','owner']
 function SectionTitle({id, emoji, title, hint}){
   return (
     <div id={id} className="flex items-center justify-between mb-3">
-      <h2 className="text-lg font-semibold flex items-center gap-2">
+      <h2 className="text-lg font-semibold flex items-center gap-2" style={{color: colors.text}}>
         <span aria-hidden className="text-base">{emoji}</span>
         {title}
       </h2>
-      {hint && <span className="text-xs text-slate-500">{hint}</span>}
+      {hint && <span className="text-xs" style={{color: colors.muted}}>{hint}</span>}
     </div>
   )
 }
@@ -46,7 +46,7 @@ export default function Dashboard(){
           {id:'overview', label:'Overview'},
           {id:'sales', label:'Penjualan'},
           {id:'withdrawals', label:'Pencairan'},
-          {id:'payments', label:'Pembayaran'}, // keep anchor but will be hidden card if not allowed
+          {id:'payments', label:'Pembayaran'},
           {id:'settings', label:'Settings'},
         ]
       case 'admin':
@@ -146,10 +146,15 @@ export default function Dashboard(){
     }
   }
 
-  // Helpers for playful chips
   function Chip({active, children, onClick}){
+    const baseStyle = {
+      borderColor: colors.border,
+      borderRadius: radii.pill,
+      color: colors.text,
+      backgroundColor: active ? 'rgba(244,114,182,0.15)' : 'transparent'
+    }
     return (
-      <button onClick={onClick} className={`px-3 py-1.5 rounded-[${radii.pill}] border text-sm transition-colors ${active? 'bg-pink-100 border-pink-200 text-slate-900':'bg-white border-[rgba(241,232,255,1)] hover:bg-violet-50'}`}>{children}</button>
+      <button onClick={onClick} className={`px-3 py-1.5 border text-sm transition-colors`} style={baseStyle}>{children}</button>
     )
   }
 
@@ -158,20 +163,20 @@ export default function Dashboard(){
       {/* Top controls */}
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold" style={{color: colors.text}}>Dashboard</h1>
           <Badge color="muted">Playful Pastel</Badge>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm">Role</span>
-            <div className="flex items-center gap-1 p-1 rounded-[999px] border bg-white" style={{ borderColor: colors.border }} role="tablist" aria-label="Select role">
+            <span className="text-sm" style={{color: colors.muted}}>Role</span>
+            <div className="flex items-center gap-1 p-1 rounded-[999px] border" style={{ borderColor: colors.border, backgroundColor: colors.surface }} role="tablist" aria-label="Select role">
               {ROLES.map(r=> (
                 <Chip key={r} active={role===r} onClick={()=>setRole(r)}>{r.replace('_',' ')}</Chip>
               ))}
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm">Email</span>
+            <span className="text-sm" style={{color: colors.muted}}>Email</span>
             <Input aria-label="Email" value={email} onChange={e=>setEmail(e.target.value)} className="w-56"/>
           </div>
         </div>
@@ -186,7 +191,10 @@ export default function Dashboard(){
               <ul className="space-y-1">
                 {sidebarItems.map(it=> (
                   <li key={it.id}>
-                    <a href={`#${it.id}`} className={`flex items-center justify-between px-3 py-2 rounded-[${radii.pill}] hover:bg-pink-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[${colors.primary}]`}>{it.label}<span aria-hidden>›</span></a>
+                    <a href={`#${it.id}`} className={`flex items-center justify-between px-3 py-2`} style={{borderRadius: radii.pill, color: colors.text}}
+                      onMouseOver={e=> e.currentTarget.style.backgroundColor='rgba(244,114,182,0.12)'}
+                      onMouseOut={e=> e.currentTarget.style.backgroundColor='transparent'}
+                    >{it.label}<span aria-hidden>›</span></a>
                   </li>
                 ))}
               </ul>
@@ -202,17 +210,17 @@ export default function Dashboard(){
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
               {metrics.cards.map((c,i)=> (
                 <Card key={i}>
-                  <p className="text-sm text-slate-600">{c.label}</p>
-                  <p className="text-2xl font-bold">{typeof c.value==='number' ? c.value.toLocaleString() : c.value}</p>
-                  {typeof c.trend==='number' && <p className={`${c.trend>=0?'text-emerald-600':'text-rose-600'} text-xs`}>{c.trend}%</p>}
+                  <p className="text-sm" style={{color: colors.muted}}>{c.label}</p>
+                  <p className="text-2xl font-bold" style={{color: colors.text}}>{typeof c.value==='number' ? c.value.toLocaleString() : c.value}</p>
+                  {typeof c.trend==='number' && <p className="text-xs" style={{color: c.trend>=0? 'rgb(5, 150, 105)':'rgb(225, 29, 72)'}}>{c.trend}%</p>}
                 </Card>
               ))}
               {showAutoPayStatus && (
                 <Card>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-slate-600">Auto Payment</p>
-                      <p className="text-2xl font-bold">{autoPay.loading? '...' : (autoPay.enabled? 'On' : 'Off')}</p>
+                      <p className="text-sm" style={{color: colors.muted}}>Auto Payment</p>
+                      <p className="text-2xl font-bold" style={{color: colors.text}}>{autoPay.loading? '...' : (autoPay.enabled? 'On' : 'Off')}</p>
                     </div>
                     <Badge color={autoPay.enabled? 'green':'yellow'}>{autoPay.loading? 'Loading…' : (autoPay.enabled? 'Aktif':'Nonaktif')}</Badge>
                   </div>
@@ -222,7 +230,7 @@ export default function Dashboard(){
                     </Button>
                   )}
                   {role==='engineer' && (
-                    <p className="mt-2 text-sm text-slate-600">Gateway & webhook health di bagian Sistem.</p>
+                    <p className="mt-2 text-sm" style={{color: colors.muted}}>Gateway & webhook health di bagian Sistem.</p>
                   )}
                 </Card>
               )}
@@ -234,8 +242,8 @@ export default function Dashboard(){
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
               <Card className="xl:col-span-2">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">Sales (30d)</h3>
-                  <div className="flex items-center gap-2 text-sm p-1 rounded-[999px] border bg-white" style={{ borderColor: colors.border }} role="tablist" aria-label="Metric">
+                  <h3 className="font-semibold" style={{color: colors.text}}>Sales (30d)</h3>
+                  <div className="flex items-center gap-2 text-sm p-1 rounded-[999px] border" style={{borderColor: colors.border, backgroundColor: colors.surface}} role="tablist" aria-label="Metric">
                     {['gross','net','units'].map(k=> (
                       <Chip key={k} active={metricKey===k} onClick={()=>setMetricKey(k)}>{k}</Chip>
                     ))}
@@ -248,7 +256,7 @@ export default function Dashboard(){
               </Card>
               {showAutoPayStatus && (
                 <Card>
-                  <h3 className="font-semibold mb-2">Recent Payments</h3>
+                  <h3 className="font-semibold mb-2" style={{color: colors.text}}>Recent Payments</h3>
                   <ul className="text-sm space-y-2">
                     <li className="flex items-center justify-between"><span>INV-1042 • PayPal</span><Badge color="green">Success</Badge></li>
                     <li className="flex items-center justify-between"><span>INV-1041 • Robux</span><Badge color="green">Success</Badge></li>
@@ -293,14 +301,14 @@ export default function Dashboard(){
             <Card>
               <div className="overflow-auto" role="region" aria-label="Tabel Penjualan">
                 <table className="min-w-full text-sm">
-                  <thead className="sticky top-0 bg-white">
+                  <thead className="sticky top-0" style={{backgroundColor: colors.surface}}>
                     <tr>
-                      {['Date/Time','Product','Reseller','Buyer','Price','Discount','Status','Method'].map(h=> <th key={h} className="text-left p-2">{h}</th> )}
+                      {['Date/Time','Product','Reseller','Buyer','Price','Discount','Status','Method'].map(h=> <th key={h} className="text-left p-2" style={{color: colors.muted, borderBottom: `1px solid ${getVar('border')}`}}>{h}</th> )}
                     </tr>
                   </thead>
                   <tbody>
                     {series.slice(0,12).map((s,i)=> (
-                      <tr key={i} className="border-t">
+                      <tr key={i} className="border-t" style={{borderColor: colors.border}}>
                         <td className="p-2">{s.date} 12:{(10+i).toString().padStart(2,'0')}</td>
                         <td className="p-2">VPS Nano</td>
                         <td className="p-2">{role==='reseller'? email : `reseller${i%4}@site.com`}</td>
@@ -327,8 +335,8 @@ export default function Dashboard(){
           <section>
             <SectionTitle id="withdrawals" emoji="💸" title="Pencairan" hint={withdrawHint(role)} />
             {role==='reseller' && (
-              <div className={`rounded-[${radii.base}] p-3 border`} style={{backgroundColor:'#FFF7ED', borderColor:'#FDE68A'}}>
-                <p className="text-sm">Kebijakan T+5 berlaku. Dana cair 5 hari setelah pengajuan.</p>
+              <div className={`rounded-[${radii.base}] p-3 border`} style={{backgroundColor:'rgba(251,191,36,0.12)', borderColor:'rgba(251,191,36,0.35)'}}>
+                <p className="text-sm" style={{color: colors.text}}>Kebijakan T+5 berlaku. Dana cair 5 hari setelah pengajuan.</p>
               </div>
             )}
 
@@ -340,20 +348,20 @@ export default function Dashboard(){
                     <Input placeholder="Jumlah (IDR)" value={withdraw.amount} onChange={e=>setWithdraw(w=>({...w, amount:e.target.value}))} />
                     <Textarea placeholder="Catatan (opsional)"/>
                     <Button onClick={submitWithdrawal} disabled={withdraw.loading}>{withdraw.loading? 'Submitting…':'Ajukan Pencairan'}</Button>
-                    {withdraw.error && <p className="text-sm text-red-600">{withdraw.error}</p>}
+                    {withdraw.error && <p className="text-sm" style={{color: 'rgb(220,38,38)'}}>{withdraw.error}</p>}
                     {withdraw.result && (
-                      <div className="text-sm text-slate-700 space-y-1">
+                      <div className="text-sm" style={{color: colors.text}}>
                         <p>Status: <span className="font-medium">{withdraw.result.status}</span></p>
-                        {withdraw.result.scheduled_date && <p>Estimasi Cair: {new Date(withdraw.result.scheduled_date).toLocaleString()}</p>}
+                        {withdraw.result.scheduled_date && <p style={{color: colors.muted}}>Estimasi Cair: {new Date(withdraw.result.scheduled_date).toLocaleString()}</p>}
                       </div>
                     )}
                   </div>
                 )}
                 {['admin'].includes(role) && (
-                  <p className="text-sm text-slate-600">Lihat pengajuan untuk review. Approval mengikuti kebijakan T+5.</p>
+                  <p className="text-sm" style={{color: colors.muted}}>Lihat pengajuan untuk review. Approval mengikuti kebijakan T+5.</p>
                 )}
                 {['high_admin','owner'].includes(role) && (
-                  <p className="text-sm text-slate-600">Anda dapat melakukan cairkan instan, approve/reject, dan unggah bukti pembayaran.</p>
+                  <p className="text-sm" style={{color: colors.muted}}>Anda dapat melakukan cairkan instan, approve/reject, dan unggah bukti pembayaran.</p>
                 )}
               </Card>
 
@@ -361,14 +369,14 @@ export default function Dashboard(){
               <Card className="lg:col-span-2">
                 <div className="overflow-auto" role="region" aria-label="Daftar Pengajuan Pencairan">
                   <table className="min-w-full text-sm">
-                    <thead className="sticky top-0 bg-white">
+                    <thead className="sticky top-0" style={{backgroundColor: colors.surface}}>
                       <tr>
-                        {['Tanggal','Reseller','Amount','Estimasi Cair','Status','Bukti','Aksi'].map(h=> <th key={h} className="text-left p-2">{h}</th> )}
+                        {['Tanggal','Reseller','Amount','Estimasi Cair','Status','Bukti','Aksi'].map(h=> <th key={h} className="text-left p-2" style={{color: colors.muted, borderBottom: `1px solid ${getVar('border')}`}}>{h}</th> )}
                       </tr>
                     </thead>
                     <tbody>
                       {Array.from({length:6}).map((_,i)=> (
-                        <tr key={i} className="border-t">
+                        <tr key={i} className="border-t" style={{borderColor: colors.border}}>
                           <td className="p-2 whitespace-nowrap">2025-01-{(10+i).toString().padStart(2,'0')}</td>
                           <td className="p-2">reseller{i}@site.com</td>
                           <td className="p-2">Rp {((i+1)*250_000).toLocaleString('id-ID')}</td>
@@ -377,7 +385,7 @@ export default function Dashboard(){
                           <td className="p-2"><Button variant="secondary">Lihat</Button></td>
                           <td className="p-2">
                             {role==='admin' && (
-                              <span className="text-slate-400 text-xs">Read-only</span>
+                              <span className="text-xs" style={{color: colors.muted}}>Read-only</span>
                             )}
                             {['high_admin','owner'].includes(role) && (
                               <div className="flex items-center gap-2">
@@ -387,7 +395,7 @@ export default function Dashboard(){
                               </div>
                             )}
                             {role==='reseller' && (
-                              <span className="text-slate-400 text-xs">Menunggu verifikasi</span>
+                              <span className="text-xs" style={{color: colors.muted}}>Menunggu verifikasi</span>
                             )}
                           </td>
                         </tr>
@@ -405,9 +413,9 @@ export default function Dashboard(){
               <SectionTitle id="payments" emoji="💳" title="Pembayaran" hint="Gateway & Auto-Capture" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
-                  <h3 className="font-semibold mb-2">Auto Payment</h3>
+                  <h3 className="font-semibold mb-2" style={{color: colors.text}}>Auto Payment</h3>
                   <div className="flex items-center justify-between text-sm">
-                    <p>Status</p>
+                    <p style={{color: colors.muted}}>Status</p>
                     <Badge color={autoPay.enabled? 'green':'yellow'}>{autoPay.loading? 'Loading…' : (autoPay.enabled? 'On':'Off')}</Badge>
                   </div>
                   <div className="mt-3">
@@ -417,7 +425,7 @@ export default function Dashboard(){
                   </div>
                 </Card>
                 <Card>
-                  <h3 className="font-semibold mb-2">Gateway Status</h3>
+                  <h3 className="font-semibold mb-2" style={{color: colors.text}}>Gateway Status</h3>
                   <ul className="text-sm space-y-2">
                     <li className="flex items-center justify-between"><span>PayPal</span><Badge color="green">Healthy</Badge></li>
                     <li className="flex items-center justify-between"><span>Robux</span><Badge color="green">Healthy</Badge></li>
@@ -438,8 +446,8 @@ export default function Dashboard(){
                     <Card key={i}>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium">{p}</p>
-                          <p className="text-sm text-slate-600">Harga mulai Rp {(15000*(i+1)).toLocaleString('id-ID')}</p>
+                          <p className="font-medium" style={{color: colors.text}}>{p}</p>
+                          <p className="text-sm" style={{color: colors.muted}}>Harga mulai Rp {(15000*(i+1)).toLocaleString('id-ID')}</p>
                         </div>
                         <Badge color={i%2? 'green':'blue'}>{i%2? 'Active':'Draft'}</Badge>
                       </div>
@@ -460,16 +468,16 @@ export default function Dashboard(){
               <SectionTitle id="system" emoji="🧩" title="Sistem" hint="Status & incident" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card>
-                  <h3 className="font-semibold">Uptime</h3>
-                  <p className="text-sm text-slate-600">99.95% • 30d</p>
+                  <h3 className="font-semibold" style={{color: colors.text}}>Uptime</h3>
+                  <p className="text-sm" style={{color: colors.muted}}>99.95% • 30d</p>
                 </Card>
                 <Card>
-                  <h3 className="font-semibold">Provisioning Queue</h3>
-                  <p className="text-sm text-slate-600">3 pending • avg 12s</p>
+                  <h3 className="font-semibold" style={{color: colors.text}}>Provisioning Queue</h3>
+                  <p className="text-sm" style={{color: colors.muted}}>3 pending • avg 12s</p>
                 </Card>
                 <Card>
-                  <h3 className="font-semibold">Webhook Status</h3>
-                  <p className="text-sm text-slate-600">PayPal OK • Robux OK • Card Delayed</p>
+                  <h3 className="font-semibold" style={{color: colors.text}}>Webhook Status</h3>
+                  <p className="text-sm" style={{color: colors.muted}}>PayPal OK • Robux OK • Card Delayed</p>
                 </Card>
               </div>
             </section>
@@ -485,12 +493,12 @@ export default function Dashboard(){
                     <Input placeholder="Cari pengguna"/>
                     <ul className="space-y-1 text-sm">
                       {['maya@site.com','irfan@site.com','lina@site.com'].map(u=> (
-                        <li key={u} className={`px-3 py-2 rounded-[${radii.base}] border hover:bg-violet-50`}>{u}</li>
+                        <li key={u} className={`px-3 py-2`} style={{borderRadius: radii.base, border: `1px solid ${getVar('border')}`}}>{u}</li>
                       ))}
                     </ul>
                   </div>
                   <div className="md:flex-1 space-y-2">
-                    <p className="font-medium">Detail Pengguna</p>
+                    <p className="font-medium" style={{color: colors.text}}>Detail Pengguna</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <Input placeholder="Email" defaultValue="maya@site.com"/>
                       <Select defaultValue="reseller"><option value="reseller">Reseller</option><option value="admin">Admin</option><option value="engineer">Engineer</option><option value="owner">Owner</option></Select>
@@ -528,23 +536,23 @@ export default function Dashboard(){
               <Card>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <p className="font-medium mb-1">Profil</p>
+                    <p className="font-medium mb-1" style={{color: colors.text}}>Profil</p>
                     <Input placeholder="Nama" defaultValue="Nimbus User"/>
                     <Input className="mt-2" placeholder="Email" defaultValue={email}/>
                   </div>
                   <div>
-                    <p className="font-medium mb-1">Notifikasi</p>
-                    <div className="flex items-center gap-2 text-sm">
+                    <p className="font-medium mb-1" style={{color: colors.text}}>Notifikasi</p>
+                    <div className="flex items-center gap-2 text-sm" style={{color: colors.text}}>
                       <input id="notif-email" type="checkbox" defaultChecked className="accent-pink-400"/>
                       <label htmlFor="notif-email">Email</label>
                     </div>
-                    <div className="flex items-center gap-2 text-sm mt-1">
+                    <div className="flex items-center gap-2 text-sm mt-1" style={{color: colors.text}}>
                       <input id="notif-telegram" type="checkbox" className="accent-violet-400"/>
                       <label htmlFor="notif-telegram">Telegram</label>
                     </div>
                   </div>
                   <div>
-                    <p className="font-medium mb-1">Password</p>
+                    <p className="font-medium mb-1" style={{color: colors.text}}>Password</p>
                     <Input type="password" placeholder="Password baru"/>
                     <Button className="mt-2" variant="secondary">Update</Button>
                   </div>
@@ -556,6 +564,11 @@ export default function Dashboard(){
       </div>
     </Layout>
   )
+}
+
+function getVar(name){
+  // Helper for inline border references
+  return getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim() || 'rgba(0,0,0,0.1)'
 }
 
 function roleLabel(role){
@@ -595,14 +608,14 @@ function LogTable({baseUrl}){
   return (
     <div className="overflow-auto">
       <table className="min-w-full text-sm">
-        <thead className="sticky top-0 bg-white">
+        <thead className="sticky top-0" style={{backgroundColor: colors.surface}}>
           <tr>
-            {['Timestamp','Category','Actor','Description','Related'].map(h=> <th key={h} className="text-left p-2">{h}</th> )}
+            {['Timestamp','Category','Actor','Description','Related'].map(h=> <th key={h} className="text-left p-2" style={{color: colors.muted, borderBottom: `1px solid ${getVar('border')}`}}>{h}</th> )}
           </tr>
         </thead>
         <tbody>
           {rows.map((r,i)=> (
-            <tr key={i} className="border-t">
+            <tr key={i} className="border-t" style={{borderColor: colors.border}}>
               <td className="p-2 whitespace-nowrap">{r.timestamp}</td>
               <td className="p-2">{r.category}</td>
               <td className="p-2">{r.actor}</td>

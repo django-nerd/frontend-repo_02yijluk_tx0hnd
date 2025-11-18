@@ -1,6 +1,7 @@
 import Layout from '../components/Layout'
 import { Button, Card } from '../components/UI'
 import { Donut } from '../components/Charts'
+import { colors, radii } from '../components/Theme'
 
 export default function Payment(){
   const params = new URLSearchParams(window.location.search)
@@ -12,18 +13,18 @@ export default function Payment(){
     <Layout>
       <div className="max-w-3xl mx-auto space-y-4" aria-label="Payment page">
         <header>
-          <h1 className="text-2xl font-semibold tracking-tight">Payment</h1>
-          <p className="text-sm text-slate-600">Review and confirm your payment.</p>
+          <h1 className="text-2xl font-semibold tracking-tight" style={{color: colors.text}}>Payment</h1>
+          <p className="text-sm" style={{color: colors.muted}}>Review and confirm your payment.</p>
         </header>
         <Card>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-slate-600 text-sm">Order</p>
-              <p className="font-semibold">{oid}</p>
+              <p className="text-sm" style={{color: colors.muted}}>Order</p>
+              <p className="font-semibold" style={{color: colors.text}}>{oid}</p>
             </div>
             <div className="text-right">
-              <p className="text-slate-600 text-sm">Total</p>
-              <p className="font-semibold">${total.toFixed(2)}</p>
+              <p className="text-sm" style={{color: colors.muted}}>Total</p>
+              <p className="font-semibold" style={{color: colors.text}}>${total.toFixed(2)}</p>
             </div>
           </div>
           <div className="mt-3 flex items-center gap-2" role="tablist" aria-label="Payment methods">
@@ -36,7 +37,7 @@ export default function Payment(){
           </div>
         </Card>
         <Card>
-          <h3 className="font-semibold mb-2">Recent payments</h3>
+          <h3 className="font-semibold mb-2" style={{color: colors.text}}>Recent payments</h3>
           <Donut valueA={70} valueB={30} />
         </Card>
       </div>
@@ -46,7 +47,13 @@ export default function Payment(){
 
 function Toggle({value, id, label}){
   const active = value===id
+  const base = {
+    borderRadius: '12px',
+    border: `1px solid ${colors.border}`,
+    color: colors.text,
+    backgroundColor: active ? 'rgba(52,211,153,0.15)' : 'color-mix(in oklab, var(--surface) 70%, transparent)'
+  }
   return (
-    <a href={`?method=${id}`} role="tab" aria-selected={active} className={`px-3 py-1.5 rounded-[12px] ${active? 'bg-emerald-100 text-emerald-800 border border-emerald-200':'bg-slate-100 text-slate-700 border border-slate-200'}`}>{label}</a>
+    <a href={`?method=${id}`} role="tab" aria-selected={active} className={`px-3 py-1.5`} style={base}>{label}</a>
   )
 }

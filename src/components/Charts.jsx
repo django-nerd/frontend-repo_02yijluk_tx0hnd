@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Area, AreaChart, PieChart, Pie, Cell } from 'recharts'
+import { ResponsiveContainer, CartesianGrid, LineChart, Line, XAxis, YAxis, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
+import { colors } from './Theme'
 
 const pastel = ['#F9A8D4','#A9F9CD','#D5F9A9','#A9D5F9','#F24AA7']
 
@@ -8,10 +8,10 @@ export function SalesLine({data, metric='gross'}){
     <div className="w-full h-64">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{top:10,right:10,left:0,bottom:0}}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1e7fb" />
-          <XAxis dataKey="date" tick={{fontSize:12}}/>
-          <YAxis tick={{fontSize:12}}/>
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
+          <XAxis dataKey="date" tick={{fontSize:12, fill: colors.muted}} axisLine={{stroke: colors.border}} tickLine={{stroke: colors.border}}/>
+          <YAxis tick={{fontSize:12, fill: colors.muted}} axisLine={{stroke: colors.border}} tickLine={{stroke: colors.border}}/>
+          <Tooltip contentStyle={{background: colors.surface, border: `1px solid var(--border)`, color: 'var(--text)'}}/>
           <Line type="monotone" dataKey={metric} stroke={metric==='gross'?'#F24AA7':metric==='net'?'#A9D5F9':'#A9F9CD'} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
@@ -24,10 +24,10 @@ export function UnitsBar({data}){
     <div className="w-full h-40">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f1e7fb" />
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.border} />
           <XAxis dataKey="date" hide/>
-          <YAxis />
-          <Tooltip />
+          <YAxis tick={{ fill: colors.muted }} axisLine={{stroke: colors.border}} tickLine={{stroke: colors.border}}/>
+          <Tooltip contentStyle={{background: colors.surface, border: `1px solid var(--border)`, color: 'var(--text)'}}/>
           <Bar dataKey="units" fill="#D5F9A9" radius={[8,8,0,0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -46,7 +46,7 @@ export function Donut({valueA=60,valueB=40}){
               <Cell key={`c-${index}`} fill={pastel[index%pastel.length]} />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip contentStyle={{background: colors.surface, border: `1px solid var(--border)`, color: 'var(--text)'}}/>
         </PieChart>
       </ResponsiveContainer>
     </div>

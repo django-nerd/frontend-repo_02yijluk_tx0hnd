@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import { Button, Card, Input } from '../components/UI'
+import { colors } from '../components/Theme'
 
 export default function Order(){
   const [products,setProducts] = useState([])
@@ -34,43 +35,43 @@ export default function Order(){
       <div className="space-y-4" aria-label="Order page">
         <header className="flex items-end justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Order services</h1>
-            <p className="text-sm text-slate-600">Choose products and review your summary.</p>
+            <h1 className="text-2xl font-semibold tracking-tight" style={{color: colors.text}}>Order services</h1>
+            <p className="text-sm" style={{color: colors.muted}}>Choose products and review your summary.</p>
           </div>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2 space-y-3">
-            <h2 className="text-base font-semibold">Products</h2>
+            <h2 className="text-base font-semibold" style={{color: colors.text}}>Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {products.map(p=> (
                 <Card key={p.sku}>
                   <div className="space-y-1">
-                    <h3 className="font-semibold leading-tight">{p.title}</h3>
-                    <p className="text-sm text-slate-600 line-clamp-3">{p.description}</p>
+                    <h3 className="font-semibold leading-tight" style={{color: colors.text}}>{p.title}</h3>
+                    <p className="text-sm" style={{color: colors.muted}}>{p.description}</p>
                   </div>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="font-semibold" aria-label={`Price ${p.price}`}>${p.price}</span>
+                    <span className="font-semibold" aria-label={`Price ${p.price}`} style={{color: colors.text}}>${p.price}</span>
                     <Button onClick={()=>add(p)} aria-label={`Add ${p.title} to cart`}>Add</Button>
                   </div>
                 </Card>
               ))}
               {products.length===0 && (
                 <Card>
-                  <p className="text-sm text-slate-600">No products available.</p>
+                  <p className="text-sm" style={{color: colors.muted}}>No products available.</p>
                 </Card>
               )}
             </div>
           </div>
           <div className="space-y-3">
-            <h2 className="text-base font-semibold">Order Summary</h2>
+            <h2 className="text-base font-semibold" style={{color: colors.text}}>Order Summary</h2>
             <Card>
               <div className="space-y-2">
-                {items.length===0 && <p className="text-sm text-slate-600">Your cart is empty</p>}
+                {items.length===0 && <p className="text-sm" style={{color: colors.muted}}>Your cart is empty</p>}
                 {items.map(i=> (
                   <div key={i.sku} className="flex items-center justify-between gap-2">
                     <div>
-                      <p className="font-medium leading-tight">{i.title}</p>
-                      <p className="text-xs text-slate-600">${i.unit_price}</p>
+                      <p className="font-medium leading-tight" style={{color: colors.text}}>{i.title}</p>
+                      <p className="text-xs" style={{color: colors.muted}}>${i.unit_price}</p>
                     </div>
                     <label className="sr-only" htmlFor={`qty-${i.sku}`}>Quantity for {i.title}</label>
                     <Input id={`qty-${i.sku}`} type="number" inputMode="numeric" className="w-20" value={i.qty} onChange={e=>updateQty(i.sku, parseInt(e.target.value||'0',10))} />
@@ -115,8 +116,8 @@ function Totals({items, baseUrl}){
 function Row({label,value,bold}){
   return (
     <div className="flex items-center justify-between">
-      <span className={bold? 'font-semibold':'text-slate-600'}>{label}</span>
-      <span className={bold? 'font-semibold':''}>{value}</span>
+      <span className={bold? 'font-semibold':''} style={{color: bold? colors.text : colors.muted}}>{label}</span>
+      <span className={bold? 'font-semibold':''} style={{color: colors.text}}>{value}</span>
     </div>
   )
 }
