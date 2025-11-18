@@ -3,6 +3,8 @@ import { Button, Card } from '../components/UI'
 import Layout from '../components/Layout'
 import { colors } from '../components/Theme'
 import ProductScroller from '../components/ProductScroller'
+import GlowTimeline from '../components/GlowTimeline'
+import Footer from '../components/Footer'
 
 const features = [
   {title:'Blazing VPS',desc:'SSD NVMe, global regions, instant provision',tone:'violet', bg:'rgba(167,139,250,0.14)'},
@@ -139,6 +141,9 @@ export default function Home(){
         ))}
       </section>
 
+      {/* Glowing stepped timeline section */}
+      <GlowTimeline />
+
       {/* Horizontal product scroller with wheel-to-horizontal behavior until edges */}
       <ProductScroller />
 
@@ -164,6 +169,8 @@ export default function Home(){
           </div>
         </div>
       </section>
+
+      <Footer />
     </Layout>
   )
 }
