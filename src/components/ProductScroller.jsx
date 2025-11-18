@@ -89,24 +89,17 @@ export default function ProductScroller(){
     if(!el) return
 
     const onWheel = (e) => {
-      // Respect reduced motion and modifier keys
+      // Do not hijack vertical scroll. Only assist when user explicitly holds Shift for horizontal.
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      if (prefersReduced || e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) return
+      if (prefersReduced) return
+      if (!e.shiftKey) return // require Shift to convert wheel to horizontal
 
-      const atStart = el.scrollLeft <= 0
       const maxLeft = el.scrollWidth - el.clientWidth
-      const atEnd = el.scrollLeft >= maxLeft - 1
-
-      // Only hijack when the user is within the scroller area
       const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX
-      const intendsHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY)
-
-      // Convert vertical wheel to horizontal until we hit edges
-      if (!intendsHorizontal) {
-        if ((delta > 0 && !atEnd) || (delta < 0 && !atStart)) {
-          e.preventDefault()
-          el.scrollTo({ left: Math.min(maxLeft, Math.max(0, el.scrollLeft + delta)), behavior: 'auto' })
-        }
+      const next = Math.min(maxLeft, Math.max(0, el.scrollLeft + delta))
+      if (next !== el.scrollLeft) {
+        e.preventDefault()
+        el.scrollTo({ left: next, behavior: 'auto' })
       }
     }
 
@@ -118,7 +111,7 @@ export default function ProductScroller(){
     <section aria-label="Plans" className="mt-12">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
-        <div className="text-sm" style={{ color: colors.muted }}>Scroll horizontally • compare at a glance</div>
+        <div className="text-sm" style={{ color: colors.muted }}>Scroll horizontally • hold Shift to scroll</div>
       </div>
 
       <div className="relative">
