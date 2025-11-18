@@ -1,20 +1,24 @@
 import { Link, NavLink } from 'react-router-dom'
+import { colors, radii } from './Theme'
 
 export default function Layout({children}){
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-gray-200">
+    <div className="min-h-screen" style={{ background: `radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,0.15), transparent), radial-gradient(800px 400px at -10% 10%, rgba(244,114,182,0.12), transparent)`, backgroundColor: colors.bg }}>
+      <header className="sticky top-0 z-30 backdrop-blur border-b" style={{ backgroundColor: 'rgba(255,255,255,0.7)', borderColor: colors.border }}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="font-semibold text-base tracking-tight">Nimbus</Link>
+          <Link to="/" className="font-semibold text-base tracking-tight flex items-center gap-2">
+            <span className="inline-block w-7 h-7 rounded-full" style={{ backgroundImage:'linear-gradient(135deg,#FDE68A,#F472B6,#A78BFA)', boxShadow:'0 4px 10px rgba(167,139,250,0.25)' }} />
+            Nimbus
+          </Link>
           <nav className="hidden md:flex items-center gap-1">
-            <NavLink to="/" className={({isActive})=>`px-3 py-2 rounded-[6px] hover:bg-slate-50 ${isActive?'bg-slate-50':''}`}>Home</NavLink>
-            <NavLink to="/dashboard" className={({isActive})=>`px-3 py-2 rounded-[6px] hover:bg-slate-50 ${isActive?'bg-slate-50':''}`}>Dashboard</NavLink>
-            <NavLink to="/order" className={({isActive})=>`px-3 py-2 rounded-[6px] hover:bg-slate-50 ${isActive?'bg-slate-50':''}`}>Order</NavLink>
-            <NavLink to="/tos" className={({isActive})=>`px-3 py-2 rounded-[6px] hover:bg-slate-50 ${isActive?'bg-slate-50':''}`}>TOS</NavLink>
+            <NavLink to="/" className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}] hover:bg-pink-50 ${isActive?'bg-pink-50':''}`}>Home</NavLink>
+            <NavLink to="/dashboard" className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}] hover:bg-violet-50 ${isActive?'bg-violet-50':''}`}>Dashboard</NavLink>
+            <NavLink to="/order" className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}] hover:bg-amber-50 ${isActive?'bg-amber-50':''}`}>Order</NavLink>
+            <NavLink to="/tos" className={({isActive})=>`px-3 py-2 rounded-[${radii.pill}] hover:bg-sky-50 ${isActive?'bg-sky-50':''}`}>TOS</NavLink>
           </nav>
           <div className="flex items-center gap-2">
-            <Link to="/login" className="px-3 py-2 rounded-[6px] bg-sky-500 text-white hover:bg-sky-600">Login</Link>
-            <Link to="/register" className="px-3 py-2 rounded-[6px] border border-gray-200 hover:bg-slate-50">Register</Link>
+            <Link to="/login" className="px-3 py-2 text-sm" style={{ backgroundImage:'linear-gradient(90deg,#FDE68A,#F472B6,#A78BFA)', color:'#0F172A', borderRadius: radii.pill }}>Login</Link>
+            <Link to="/register" className="px-3 py-2 text-sm border" style={{ borderColor: colors.border, borderRadius: radii.pill }}>Register</Link>
           </div>
         </div>
       </header>

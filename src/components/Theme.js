@@ -1,15 +1,19 @@
 export const colors = {
-  // Pro Clean palette
-  bg: '#F8FAFC',           // slate-50
+  // Playful Pastel palette
+  bg: '#FCFAFF',            // soft lavender background
   surface: '#FFFFFF',
-  border: '#E5E7EB',       // gray-200
-  text: '#0F172A',         // slate-900
-  muted: '#64748B',        // slate-500
-  primary: '#0EA5E9',      // sky-500
-  primaryDark: '#0284C7',  // sky-600
-  accent: '#22C55E',       // emerald-500 (sparingly)
+  border: '#F1E8FF',        // light lilac border
+  text: '#0F172A',          // slate-900 (keeps readability)
+  muted: '#6B7280',         // gray-500
+  primary: '#A78BFA',       // violet-400
+  primaryDark: '#8B5CF6',   // violet-500
+  accent: '#34D399',        // emerald-400
+  bubblegum: '#F472B6',     // pink-400
+  sky: '#60A5FA',           // blue-400
+  lemon: '#FBBF24',         // amber-400
 }
 
 export const radii = {
-  base: '6px',
+  base: '14px',
+  pill: '999px',
 }
