@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import Spline from '@splinetool/react-spline'
 import { Button, Card } from '../components/UI'
 import Layout from '../components/Layout'
@@ -11,25 +12,110 @@ const features = [
 ]
 
 export default function Home(){
+  const featuresRef = useRef(null)
+  const heroRef = useRef(null)
+  const [scrollY, setScrollY] = useState(0)
+
+  useEffect(()=>{
+    const onScroll = () => {
+      const y = window.scrollY
+      setScrollY(y)
+      // set CSS variables for subtle parallax
+      if(heroRef.current){
+        const h = heroRef.current.offsetHeight || window.innerHeight
+        const p = Math.min(1, Math.max(0, y / h))
+        heroRef.current.style.setProperty('--p', String(p))
+      }
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return ()=> window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const handleScrollDown = () => {
+    const target = featuresRef.current
+    if(!target) return
+    const top = target.getBoundingClientRect().top + window.scrollY - 16
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+
   return (
     <Layout>
-      <section className="relative rounded-[14px] overflow-hidden">
-        <div className="h-[420px] w-full">
+      {/* Full-screen Nimbus Hero with scroll-driven motion */}
+      <section
+        ref={heroRef}
+        className="relative overflow-hidden rounded-[14px] min-h-screen flex items-stretch"
+        aria-label="Nimbus hero"
+      >
+        <div className="absolute inset-0">
           <Spline scene="https://prod.spline.design/8nsoLg1te84JZcE9/scene.splinecode" style={{ width: '100%', height: '100%' }} />
         </div>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(to top, rgba(252,250,255,0.9), transparent 40%)' }}></div>
-        <div className="absolute inset-x-0 bottom-4 px-4 md:px-8 flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: '#FFF1F2', color: '#9D174D', boxShadow:'0 6px 24px rgba(244,114,182,0.25)' }}>New • Pastel Play theme</div>
-          <h1 className="text-3xl md:text-5xl font-semibold mb-2">Nimbus</h1>
-          <p className="text-slate-600 max-w-2xl">A playful, energetic platform for domains, VPS, and panels — now with candy gradients and soft, cute surfaces.</p>
-          <div className="mt-4 flex gap-3">
-            <Button variant="candy">Get Started</Button>
-            <Button variant="outline">Visit Dashboard</Button>
+
+        {/* Soft gradient veils for readability */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(60% 40% at 20% 10%, rgba(244,114,182,0.15), transparent), radial-gradient(50% 35% at 80% 0%, rgba(96,165,250,0.15), transparent), linear-gradient(to top, rgba(252,250,255,0.92), transparent 40%)',
+          }}
+        />
+
+        {/* Copy block with parallax on scroll */}
+        <div className="relative z-10 w-full flex flex-col items-center justify-end md:justify-center text-center px-4 pb-28 md:pb-10">
+          <div
+            style={{
+              transform: `translateY(${Math.min(40, scrollY * 0.06)}px)`,
+              transition: 'transform 0.15s ease-out',
+            }}
+          >
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium shadow"
+              style={{ backgroundColor: '#FFF1F2', color: '#9D174D', boxShadow:'0 6px 24px rgba(244,114,182,0.25)' }}
+            >
+              New • Pastel Play theme
+            </div>
+            <h1 className="text-4xl md:text-6xl font-semibold mt-3">Nimbus</h1>
+            <p className="text-slate-600 max-w-2xl mx-auto mt-2">
+              A playful, energetic platform for domains, VPS, and panels — with candy gradients and soft, cute surfaces.
+            </p>
+            <div className="mt-5 flex gap-3 justify-center">
+              <Button variant="candy" aria-label="Get started with Nimbus">Get Started</Button>
+              <Button variant="outline" aria-label="Open the dashboard">Visit Dashboard</Button>
+            </div>
           </div>
+
+          {/* Scroll cue */}
+          <button
+            type="button"
+            onClick={handleScrollDown}
+            className="group mt-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm border backdrop-blur"
+            aria-label="Scroll to features"
+            style={{ borderColor: '#F1E8FF', backgroundColor: 'rgba(255,255,255,0.65)' }}
+          >
+            <span className="w-2 h-2 rounded-full bg-pink-400 group-hover:bg-violet-400 transition-colors" />
+            Scroll
+            <span
+              aria-hidden
+              className="ml-1 inline-block w-3 h-3 rounded-full border border-violet-300"
+              style={{ boxShadow: 'inset 0 -6px 0 0 rgba(167,139,250,0.55)', transform: 'rotate(45deg)' }}
+            />
+          </button>
         </div>
+
+        {/* Subtle blur at the bottom to hint scroll */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-24"
+          style={{
+            backdropFilter: 'blur(calc(6px * var(--p, 0)))',
+            background: 'linear-gradient(to bottom, rgba(252,250,255,0), rgba(252,250,255,0.9))',
+          }}
+        />
       </section>
 
-      <section className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Content below hero */}
+      <section ref={featuresRef} id="features" className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {features.map((f)=> (
           <Card key={f.title} className="transition-transform hover:-translate-y-0.5" style={{ backgroundColor: '#FFFFFF' }}>
             <div className="h-12 w-12 rounded-[14px]" style={{ background: f.bg, boxShadow:'inset 0 0 0 1px rgba(0,0,0,0.03)' }}/>
