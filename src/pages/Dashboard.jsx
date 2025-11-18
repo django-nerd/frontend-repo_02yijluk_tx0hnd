@@ -164,7 +164,7 @@ export default function Dashboard(){
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2">
             <span className="text-sm">Role</span>
-            <div className="flex items-center gap-1" role="tablist" aria-label="Select role">
+            <div className="flex items-center gap-1 p-1 rounded-[999px] border bg-white" style={{ borderColor: colors.border }} role="tablist" aria-label="Select role">
               {ROLES.map(r=> (
                 <Chip key={r} active={role===r} onClick={()=>setRole(r)}>{r.replace('_',' ')}</Chip>
               ))}
@@ -204,7 +204,7 @@ export default function Dashboard(){
                 <Card key={i}>
                   <p className="text-sm text-slate-600">{c.label}</p>
                   <p className="text-2xl font-bold">{typeof c.value==='number' ? c.value.toLocaleString() : c.value}</p>
-                  {typeof c.trend==='number' && <p className={`text-xs ${c.trend>=0?'text-emerald-600':'text-rose-600'}`}>{c.trend}%</p>}
+                  {typeof c.trend==='number' && <p className={`${c.trend>=0?'text-emerald-600':'text-rose-600'} text-xs`}>{c.trend}%</p>}
                 </Card>
               ))}
               {showAutoPayStatus && (
@@ -235,7 +235,7 @@ export default function Dashboard(){
               <Card className="xl:col-span-2">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">Sales (30d)</h3>
-                  <div className="flex items-center gap-2 text-sm" role="tablist" aria-label="Metric">
+                  <div className="flex items-center gap-2 text-sm p-1 rounded-[999px] border bg-white" style={{ borderColor: colors.border }} role="tablist" aria-label="Metric">
                     {['gross','net','units'].map(k=> (
                       <Chip key={k} active={metricKey===k} onClick={()=>setMetricKey(k)}>{k}</Chip>
                     ))}

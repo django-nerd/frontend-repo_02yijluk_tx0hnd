@@ -1,15 +1,18 @@
 import { useState } from 'react'
+import Layout from '../components/Layout'
 import { Button, Input, Card } from '../components/UI'
 
 function AuthShell({title, subtitle, children}){
   return (
-    <div className="min-h-[70vh] grid grid-cols-1 place-items-center">
-      <Card className="w-full max-w-sm p-6">
-        <h1 className="text-xl font-semibold mb-1">{title}</h1>
-        <p className="text-sm text-slate-600 mb-6">{subtitle}</p>
-        {children}
-      </Card>
-    </div>
+    <Layout>
+      <div className="min-h-[70vh] grid grid-cols-1 place-items-center">
+        <Card className="w-full max-w-sm p-6">
+          <h1 className="text-xl font-semibold mb-1">{title}</h1>
+          <p className="text-sm text-slate-600 mb-6">{subtitle}</p>
+          {children}
+        </Card>
+      </div>
+    </Layout>
   )
 }
 
@@ -78,7 +81,7 @@ export function Login(){
         </div>
         <PasswordField id="password" label="Password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete="current-password" />
         {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
-        <Button type="submit" className="w-full" disabled={loading} aria-busy={loading} aria-disabled={loading}>{loading?'Signing in…':'Sign in'}</Button>
+        <Button type="submit" className="w-full" variant="candy" disabled={loading} aria-busy={loading} aria-disabled={loading}>{loading?'Signing in…':'Sign in'}</Button>
         <div className="relative flex items-center justify-center my-2">
           <span className="h-px bg-gray-200 w-full" aria-hidden="true" />
           <span className="px-2 text-xs text-slate-500">or</span>
@@ -131,12 +134,12 @@ export function Register(){
         </div>
         <PasswordField id="password" label="Password" value={password} onChange={e=>setPassword(e.target.value)} autoComplete="new-password" />
         {error && <p className="text-sm text-red-600" role="alert">{error}</p>}
-        <Button type="submit" className="w-full" disabled={loading} aria-busy={loading} aria-disabled={loading}>{loading?'Creating…':'Create account'}</Button>
+        <Button type="submit" className="w-full" variant="candy" disabled={loading} aria-busy={loading} aria-disabled={loading}>{loading?'Creating…':'Create account'}</Button>
         <div className="relative flex items-center justify-center my-2">
           <span className="h-px bg-gray-200 w-full" aria-hidden="true" />
           <span className="px-2 text-xs text-slate-500">or</span>
           <span className="h-px bg-gray-200 w-full" aria-hidden="true" />
-        </div>
+          </div>
         <SocialButtons />
         <p className="text-sm text-slate-600">Already have an account? <a href="/login" className="text-sky-600 hover:underline">Sign in</a></p>
       </form>
