@@ -7,6 +7,7 @@ import Checkout from './pages/Checkout'
 import Payment from './pages/Payment'
 import TOS from './pages/TOS'
 import ControlPanel from './pages/ControlPanel'
+import VPSDetail from './pages/VPSDetail'
 
 function App(){
   return (
@@ -14,6 +15,7 @@ function App(){
       <Route path="/" element={<Home/>} />
       <Route path="/dashboard" element={<Dashboard/>} />
       <Route path="/control" element={<ControlPanel/>} />
+      <Route path="/vps/:id" element={<VPSDetail/>} />
       <Route path="/login" element={<Login/>} />
       <Route path="/register" element={<Register/>} />
       <Route path="/order" element={<Order/>} />

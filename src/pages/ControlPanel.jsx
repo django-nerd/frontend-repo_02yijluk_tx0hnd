@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Layout from '../components/Layout'
 import { Button, Card, Input, Select, Textarea, Badge } from '../components/UI'
 import { colors, radii } from '../components/Theme'
+import { Link } from 'react-router-dom'
 
 const TABS = ['Summary','VPS','Domains/DNS','Panels','Billing','Activity']
 
@@ -80,7 +81,7 @@ export default function ControlPanel(){
                   <tbody>
                     {['nimbus-01','nimbus-02','db-01','edge-01'].map((name,i)=> (
                       <tr key={name} className="border-t">
-                        <td className="p-2 font-medium">{name}</td>
+                        <td className="p-2 font-medium"><Link to={`/vps/vm-${(8000+i).toString(16)}`} className="underline decoration-pink-300 underline-offset-2 hover:text-pink-600">{name}</Link></td>
                         <td className="p-2">FRA{i%2? '1':'3'}</td>
                         <td className="p-2">Nano</td>
                         <td className="p-2">2 vCPU / 2 GB</td>
