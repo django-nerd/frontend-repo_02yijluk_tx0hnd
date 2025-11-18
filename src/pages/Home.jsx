@@ -41,11 +41,12 @@ export default function Home(){
 
   return (
     <Layout>
-      {/* Full-screen Nimbus Hero with scroll-driven motion */}
+      {/* Full-bleed, full-screen Nimbus Hero with scroll-driven motion */}
       <section
         ref={heroRef}
-        className="relative overflow-hidden rounded-[14px] min-h-screen flex items-stretch"
+        className="relative overflow-hidden min-h-screen flex items-stretch w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]"
         aria-label="Nimbus hero"
+        style={{ position: 'relative' }}
       >
         <div className="absolute inset-0">
           <Spline scene="https://prod.spline.design/8nsoLg1te84JZcE9/scene.splinecode" style={{ width: '100%', height: '100%' }} />
