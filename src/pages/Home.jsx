@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Button, Card } from '../components/UI'
+import { Button } from '../components/UI'
 import Layout from '../components/Layout'
 import { colors } from '../components/Theme'
 import ProductScroller from '../components/ProductScroller'
@@ -101,11 +101,11 @@ export default function Home(){
             type="button"
             onClick={handleScrollDown}
             className="group mt-10 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm border backdrop-blur"
-            aria-label="Scroll to features"
+            aria-label="Scroll to products"
             style={{ borderColor: colors.border, backgroundColor: 'color-mix(in oklab, var(--surface) 70%, transparent)', color: colors.text }}
           >
             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--bubblegum)' }} />
-            Scroll
+            Lihat produk
             <span
               aria-hidden
               className="ml-1 inline-block w-3 h-3 rounded-full border"
@@ -133,28 +133,7 @@ export default function Home(){
       {/* Horizontal product scroller with wheel-to-horizontal behavior until edges */}
       <ProductScroller />
 
-      <section className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[1,2,3].map(i=> (
-          <Card key={i} style={{ background: `linear-gradient(180deg, color-mix(in oklab, var(--surface) 100%, transparent) 0%, color-mix(in oklab, var(--bg) 100%, transparent) 100%)` }}>
-            <h4 className="font-semibold mb-1" style={{ color: colors.text }}>Loved by teams</h4>
-            <p className="text-sm" style={{ color: colors.muted }}>
-              “The cute, soft UI makes serious work feel light. Provisioning feels magical.”
-            </p>
-          </Card>
-        ))}
-      </section>
-
-      <section className="mt-12">
-        <div className="rounded-[14px] p-6 border" style={{ backgroundColor: 'rgba(167,139,250,0.1)', color: colors.text, borderColor: colors.border }}>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="text-xl font-semibold" style={{ color: colors.text }}>Make it yours</h3>
-              <p className="text-sm/relaxed" style={{ color: colors.muted }}>Switch themes, tune colors, and keep the soft, cheerful vibe across your workspace.</p>
-            </div>
-            <Button variant="secondary" style={{ backgroundColor: colors.surface, borderColor: colors.border, borderRadius: '999px' }}>Customize</Button>
-          </div>
-        </div>
-      </section>
+      {/* Removed sections after products as requested */}
 
       <Footer />
     </Layout>
