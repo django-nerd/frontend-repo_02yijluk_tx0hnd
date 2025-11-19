@@ -12,7 +12,7 @@ function Tab({label, active, onClick}){
       onClick={onClick}
       role="tab"
       aria-selected={active}
-      className={`px-3 py-1.5 rounded-[${radii.pill}] text-sm transition-colors`}
+      className={`px-3 py-1.5 rounded-[${radii.pill}] text-sm transition-colors whitespace-nowrap`}
       style={{
         backgroundColor: active ? 'rgba(244,114,182,0.18)' : colors.surface,
         borderColor: active ? 'rgba(244,114,182,0.35)' : colors.border,
@@ -29,13 +29,18 @@ export default function ControlPanel(){
 
   return (
     <Layout>
-      <div className="space-y-4" aria-label="Control Panel">
-        <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="space-y-4 overflow-x-hidden" aria-label="Control Panel">
+        <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between w-full">
           <div>
             <h1 className="text-2xl font-bold" style={{ color: colors.text }}>Control Panel</h1>
             <p className="text-sm" style={{ color: colors.muted }}>UI-only preview for managing VPS, domains, and panels.</p>
           </div>
-          <div className="flex items-center gap-2 p-1 rounded-[999px] border" style={{ borderColor: colors.border, backgroundColor: colors.surface }} role="tablist" aria-label="Control panel sections">
+          <div
+            className="flex flex-wrap md:flex-nowrap items-center gap-2 p-1 rounded-[999px] border max-w-full overflow-x-auto"
+            style={{ borderColor: colors.border, backgroundColor: colors.surface }}
+            role="tablist"
+            aria-label="Control panel sections"
+          >
             {TABS.map(t=> (
               <Tab key={t} label={t} active={tab===t} onClick={()=>setTab(t)} />
             ))}
