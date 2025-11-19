@@ -6,13 +6,6 @@ import ProductScroller from '../components/ProductScroller'
 import GlowTimeline from '../components/GlowTimeline'
 import Footer from '../components/Footer'
 
-const features = [
-  {title:'Blazing VPS',desc:'SSD NVMe, global regions, instant provision',tone:'violet', bg:'rgba(167,139,250,0.14)'},
-  {title:'Domains',desc:'Simple search, WHOIS privacy, easy DNS',tone:'pink', bg:'rgba(244,114,182,0.14)'},
-  {title:'Panels',desc:'Game & web panels with refined UX',tone:'sky', bg:'rgba(96,165,250,0.14)'},
-  {title:'Auto Payment',desc:'Seamless capture, retries, fraud guard',tone:'lemon', bg:'rgba(251,191,36,0.16)'},
-]
-
 export default function Home(){
   const featuresRef = useRef(null)
   const heroRef = useRef(null)
@@ -131,18 +124,11 @@ export default function Home(){
         />
       </section>
 
-      <section ref={featuresRef} id="features" className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {features.map((f)=> (
-          <Card key={f.title} className="transition-transform hover:-translate-y-0.5" style={{ backgroundColor: colors.surface }}>
-            <div className="h-12 w-12 rounded-[14px]" style={{ background: f.bg, boxShadow:'inset 0 0 0 1px rgba(0,0,0,0.03)' }}/>
-            <h3 className="mt-3 font-semibold" style={{ color: colors.text }}>{f.title}</h3>
-            <p className="text-sm" style={{ color: colors.muted }}>{f.desc}</p>
-          </Card>
-        ))}
-      </section>
-
       {/* Glowing stepped timeline section */}
       <GlowTimeline />
+
+      {/* Anchor for scrolling down from hero; positioned just before products */}
+      <div ref={featuresRef} />
 
       {/* Horizontal product scroller with wheel-to-horizontal behavior until edges */}
       <ProductScroller />
