@@ -55,19 +55,25 @@ export const Button = ({variant='primary', className='', children, style={}, dis
 
   const activeStyle = disabled ? {} : { transform: 'translateY(0.5px)', boxShadow: 'var(--shadow-1)' }
 
+  // Visible keyboard focus ring for accessibility
+  const focusStyle = disabled ? {} : { boxShadow: '0 0 0 2px rgba(167,139,250,0.55), var(--shadow-1)' }
+
   return (
     <button
       {...props}
       disabled={disabled}
       style={{ ...base, ...v.style, ...style }}
       className={cn(
-        'focus:outline-none',
+        // keep native outline for high-contrast agents; we also show a custom ring via JS
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa] focus:outline-none',
         className
       )}
-      onMouseEnter={(e)=>{ Object.assign(e.currentTarget.style, hoverStyle) }}
-      onMouseLeave={(e)=>{ Object.assign(e.currentTarget.style, { ...(v.style), ...(style), boxShadow: 'var(--shadow-1)', transform: 'translateY(0px)' }) }}
-      onMouseDown={(e)=>{ Object.assign(e.currentTarget.style, activeStyle) }}
-      onMouseUp={(e)=>{ Object.assign(e.currentTarget.style, hoverStyle) }}
+      onMouseEnter={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...v.style, ...style, ...hoverStyle }) }}
+      onMouseLeave={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...v.style, ...style, boxShadow: 'var(--shadow-1)', transform: 'translateY(0px)' }) }}
+      onMouseDown={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...v.style, ...style, ...activeStyle }) }}
+      onMouseUp={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...v.style, ...style, ...hoverStyle }) }}
+      onFocus={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...v.style, ...style, ...focusStyle }) }}
+      onBlur={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...v.style, ...style, boxShadow: 'var(--shadow-1)' }) }}
     >
       {children}
     </button>
@@ -86,14 +92,17 @@ export const Card = ({className='', children, style={}}) => (
 export const Input = forwardRef(function Input({className='', style={}, ...props}, ref){
   const base = { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text, borderWidth: 1, borderStyle:'solid', borderRadius: radii.base, padding: '0.5rem 0.75rem', fontSize: '0.875rem', transition: 'border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease' }
   const hover = { backgroundColor: 'color-mix(in oklab, var(--surface) 94%, var(--primary) 6%)' }
+  const focus = { boxShadow: '0 0 0 2px rgba(167,139,250,0.55)' }
   return (
     <input
       ref={ref}
       {...props}
       style={{ ...base, ...style }}
-      className={cn('w-full outline-none', className)}
+      className={cn('w-full outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa]', className)}
       onMouseEnter={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style, ...hover }) }}
       onMouseLeave={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style }) }}
+      onFocus={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style, ...focus }) }}
+      onBlur={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style }) }}
     />
   )}
 )
@@ -101,13 +110,16 @@ export const Input = forwardRef(function Input({className='', style={}, ...props
 export const Select = ({className='', children, style={}, ...props}) => {
   const base = { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text, borderWidth: 1, borderStyle:'solid', borderRadius: radii.base, padding: '0.5rem 0.75rem', fontSize: '0.875rem', transition: 'border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease' }
   const hover = { backgroundColor: 'color-mix(in oklab, var(--surface) 94%, var(--primary) 6%)' }
+  const focus = { boxShadow: '0 0 0 2px rgba(167,139,250,0.55)' }
   return (
     <select
       {...props}
       style={{ ...base, ...style }}
-      className={cn('w-full outline-none', className)}
+      className={cn('w-full outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa]', className)}
       onMouseEnter={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style, ...hover }) }}
       onMouseLeave={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style }) }}
+      onFocus={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style, ...focus }) }}
+      onBlur={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style }) }}
     >
       {children}
     </select>
@@ -117,13 +129,16 @@ export const Select = ({className='', children, style={}, ...props}) => {
 export const Textarea = ({className='', style={}, ...props}) => {
   const base = { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text, borderWidth: 1, borderStyle:'solid', borderRadius: radii.base, padding: '0.5rem 0.75rem', fontSize: '0.875rem', transition: 'border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease' }
   const hover = { backgroundColor: 'color-mix(in oklab, var(--surface) 94%, var(--primary) 6%)' }
+  const focus = { boxShadow: '0 0 0 2px rgba(167,139,250,0.55)' }
   return (
     <textarea
       {...props}
       style={{ ...base, ...style }}
-      className={cn('w-full outline-none', className)}
+      className={cn('w-full outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a78bfa]', className)}
       onMouseEnter={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style, ...hover }) }}
       onMouseLeave={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style }) }}
+      onFocus={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style, ...focus }) }}
+      onBlur={(e)=>{ Object.assign(e.currentTarget.style, { ...base, ...style }) }}
     />
   )
 }
