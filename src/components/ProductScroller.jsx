@@ -194,68 +194,72 @@ export default function ProductScroller(){
 
   return (
     <section ref={sectionRef} aria-label="Plans" className="relative mt-6" style={{ height: dims.pinH, touchAction: 'pan-y' }}>
-      <div ref={pinRef} className="sticky top-0 h-screen overflow-hidden" style={{ touchAction: 'pan-y' }}>
-        {/* Heading bar centered within content width */}
-        <div className="max-w-7xl mx-auto mb-3 px-4 sm:px-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
-          <div className="text-sm" style={{ color: colors.muted }}>Scroll</div>
-        </div>
+      {/* Sticky wrapper that pins when its center hits viewport center */}
+      <div className="sticky top-1/2">
+        {/* Centered pinned container (avoid transform on sticky element itself) */}
+        <div ref={pinRef} className="-translate-y-1/2 h-screen overflow-hidden" style={{ touchAction: 'pan-y' }}>
+          {/* Heading bar centered within content width */}
+          <div className="max-w-7xl mx-auto mb-3 px-4 sm:px-6 flex items-center justify-between">
+            <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
+            <div className="text-sm" style={{ color: colors.muted }}>Scroll</div>
+          </div>
 
-        <div className="relative h-[calc(100svh-2.5rem)]">
-          {/* Edge washes */}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-10" style={{
-            background: 'linear-gradient(to right, color-mix(in oklab, var(--bg) 92%, transparent), transparent)'
-          }}/>
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10" style={{
-            background: 'linear-gradient(to left, color-mix(in oklab, var(--bg) 92%, transparent), transparent)'
-          }}/>
+          <div className="relative h-[calc(100svh-2.5rem)]">
+            {/* Edge washes */}
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-10" style={{
+              background: 'linear-gradient(to right, color-mix(in oklab, var(--bg) 92%, transparent), transparent)'
+            }}/>
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10" style={{
+              background: 'linear-gradient(to left, color-mix(in oklab, var(--bg) 92%, transparent), transparent)'
+            }}/>
 
-          {/* Track: horizontally long row translated by vertical scroll */}
-          <div ref={trackRef} className="absolute top-0 left-0 h-full will-change-transform">
-            <div className="flex h-full items-center gap-4 px-3">
-              {products.map(p => (
-                <article key={p.id} className="w-[300px] sm:w-[340px] md:w-[380px] flex-shrink-0">
-                  <Card className="h-[calc(100%-4px)]" style={{ backgroundColor: colors.surface }}>
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold" style={{ color: colors.text }}>{p.name}</h3>
-                      <Badge>{p.tag}</Badge>
-                    </div>
-                    <div className="mt-1 text-2xl font-semibold" style={{ color: colors.text }}>{p.price}</div>
-
-                    <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                      {p.specs.map(s => (
-                        <li key={s.k} className="flex items-center justify-between">
-                          <span style={{ color: colors.muted }}>{s.k}</span>
-                          <span style={{ color: colors.text }}>{s.v}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="mt-4 rounded-[12px] border p-3" style={{ borderColor: colors.border, backgroundColor: p.wash }}>
-                      <div className="text-xs font-medium mb-2" style={{ color: colors.text }}>Vs others</div>
-                      <div className="grid grid-cols-3 text-xs">
-                        <div className="font-medium" style={{ color: colors.muted }}>Key</div>
-                        <div className="font-medium" style={{ color: colors.text }}>Us</div>
-                        <div className="font-medium" style={{ color: colors.text }}>Others</div>
+            {/* Track: horizontally long row translated by vertical scroll */}
+            <div ref={trackRef} className="absolute top-0 left-0 h-full will-change-transform">
+              <div className="flex h-full items-center gap-4 px-3">
+                {products.map(p => (
+                  <article key={p.id} className="w-[300px] sm:w-[340px] md:w-[380px] flex-shrink-0">
+                    <Card className="h-[calc(100%-4px)]" style={{ backgroundColor: colors.surface }}>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold" style={{ color: colors.text }}>{p.name}</h3>
+                        <Badge>{p.tag}</Badge>
                       </div>
-                      {p.vs.map(row => (
-                        <div key={row.k} className="grid grid-cols-3 text-xs py-1 border-t" style={{ borderColor: 'color-mix(in oklab, var(--border) 70%, transparent)' }}>
-                          <div style={{ color: colors.muted }}>{row.k}</div>
-                          <div style={{ color: colors.text }}>{row.us}</div>
-                          <div style={{ color: colors.text }}>{row.them}</div>
-                        </div>
-                      ))}
-                    </div>
+                      <div className="mt-1 text-2xl font-semibold" style={{ color: colors.text }}>{p.price}</div>
 
-                    <div className="mt-4 flex gap-2">
-                      <Button variant="candy">Get {p.name}</Button>
-                      <Button variant="outline">Details</Button>
-                    </div>
-                  </Card>
-                </article>
-              ))}
-              {/* Trailing spacer so card terakhir bisa benar-benar masuk penuh */}
-              <div className="w-6 md:w-10 flex-shrink-0" />
+                      <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                        {p.specs.map(s => (
+                          <li key={s.k} className="flex items-center justify-between">
+                            <span style={{ color: colors.muted }}>{s.k}</span>
+                            <span style={{ color: colors.text }}>{s.v}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mt-4 rounded-[12px] border p-3" style={{ borderColor: colors.border, backgroundColor: p.wash }}>
+                        <div className="text-xs font-medium mb-2" style={{ color: colors.text }}>Vs others</div>
+                        <div className="grid grid-cols-3 text-xs">
+                          <div className="font-medium" style={{ color: colors.muted }}>Key</div>
+                          <div className="font-medium" style={{ color: colors.text }}>Us</div>
+                          <div className="font-medium" style={{ color: colors.text }}>Others</div>
+                        </div>
+                        {p.vs.map(row => (
+                          <div key={row.k} className="grid grid-cols-3 text-xs py-1 border-t" style={{ borderColor: 'color-mix(in oklab, var(--border) 70%, transparent)' }}>
+                            <div style={{ color: colors.muted }}>{row.k}</div>
+                            <div style={{ color: colors.text }}>{row.us}</div>
+                            <div style={{ color: colors.text }}>{row.them}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 flex gap-2">
+                        <Button variant="candy">Get {p.name}</Button>
+                        <Button variant="outline">Details</Button>
+                      </div>
+                    </Card>
+                  </article>
+                ))}
+                {/* Trailing spacer so card terakhir bisa benar-benar masuk penuh */}
+                <div className="w-6 md:w-10 flex-shrink-0" />
+              </div>
             </div>
           </div>
         </div>
