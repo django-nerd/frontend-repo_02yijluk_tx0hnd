@@ -89,18 +89,29 @@ export default function ProductScroller(){
     if(!el) return
 
     const onWheel = (e) => {
-      // Do not hijack vertical scroll. Only assist when user explicitly holds Shift for horizontal.
+      // Convert vertical wheel to horizontal when hovering the scroller
+      // This keeps the page from moving vertically while you're over the scroller
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (prefersReduced) return
-      if (!e.shiftKey) return // require Shift to convert wheel to horizontal
 
-      const maxLeft = el.scrollWidth - el.clientWidth
-      const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX
-      const next = Math.min(maxLeft, Math.max(0, el.scrollLeft + delta))
-      if (next !== el.scrollLeft) {
-        e.preventDefault()
-        el.scrollTo({ left: next, behavior: 'auto' })
+      // Only act if the event target is within our scroller
+      // and there is horizontal overflow to scroll
+      const canScrollHoriz = el.scrollWidth > el.clientWidth
+      if (!canScrollHoriz) return
+
+      const absX = Math.abs(e.deltaX)
+      const absY = Math.abs(e.deltaY)
+
+      // If user is scrolling mostly vertically, translate that into horizontal movement
+      if (absY >= absX) {
+        const maxLeft = el.scrollWidth - el.clientWidth
+        const next = Math.min(maxLeft, Math.max(0, el.scrollLeft + e.deltaY))
+        if (next !== el.scrollLeft) {
+          e.preventDefault()
+          el.scrollTo({ left: next, behavior: 'auto' })
+        }
       }
+      // If they already scroll horizontally (trackpad), let it pass through naturally
     }
 
     el.addEventListener('wheel', onWheel, { passive: false })
@@ -111,7 +122,7 @@ export default function ProductScroller(){
     <section aria-label="Plans" className="mt-12">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
-        <div className="text-sm" style={{ color: colors.muted }}>Scroll horizontally • hold Shift to scroll</div>
+        <div className="text-sm" style={{ color: colors.muted }}>Scroll horizontally</div>
       </div>
 
       <div className="relative">
@@ -129,7 +140,7 @@ export default function ProductScroller(){
           style={{ scrollBehavior: 'smooth' }}
         >
           {products.map(p => (
-            <article key={p.id} className="min-w-[280px] sm:min-w-[320px] md:min-w-[360px] snap-start">
+            <article key={p.id} className="w-[300px] sm:w-[340px] md:w-[380px] flex-shrink-0 snap-start">
               <Card className="h-full" style={{ backgroundColor: colors.surface }}>
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold" style={{ color: colors.text }}>{p.name}</h3>

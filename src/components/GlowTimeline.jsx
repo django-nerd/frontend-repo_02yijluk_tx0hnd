@@ -122,9 +122,9 @@ export default function GlowTimeline(){
                 <div className="hidden md:flex relative items-center justify-center order-2">
                   {/* Connector line from path to card */}
                   <div
-                    className={`absolute h-[2px] w-[calc(56px+16px)] ${isLeft ? 'left-1/2' : 'right-1/2'}`}
+                    className={`absolute h-[2px] ${isLeft ? 'left-1/2 right-0' : 'right-1/2 left-0'}`}
                     style={{
-                      background: shown ? 'linear-gradient(90deg, rgba(244,114,182,0.8), rgba(167,139,250,0.8))' : 'rgba(167,139,250,0.25)',
+                      background: shown ? 'linear-gradient(90deg, rgba(244,114,182,0.9), rgba(167,139,250,0.9))' : 'rgba(167,139,250,0.25)',
                       transformOrigin: isLeft ? 'left center' : 'right center',
                       transform: shown || reduceMotion.current ? 'scaleX(1)' : 'scaleX(0)',
                       transition: reduceMotion.current ? undefined : 'transform 420ms ease'
@@ -154,7 +154,9 @@ export default function GlowTimeline(){
                       transition: reduceMotion.current ? undefined : 'opacity 420ms ease, transform 420ms ease'
                     }}
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-start gap-3 relative">
+                      {/* Anchor to ensure connector meets the card content center */}
+                      <span className="absolute top-1/2 -translate-y-1/2" style={{ [isLeft ? 'left' : 'right']: '-24px', width: 0, height: 0 }} aria-hidden />
                       <div className="mt-0.5 w-8 h-8 rounded-[12px]" style={{ background: 'rgba(167,139,250,0.16)' }} />
                       <div>
                         <h3 className="font-semibold" style={{ color: colors.text }}>{s.title}</h3>
