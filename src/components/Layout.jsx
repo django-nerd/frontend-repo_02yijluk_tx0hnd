@@ -49,8 +49,8 @@ export default function Layout({children}){
       }}
     >
       <header
-        className="sticky top-0 z-30 backdrop-blur border-b"
-        style={{ backgroundColor: 'var(--header-glass)', borderColor: colors.border }}
+        className={`sticky top-0 z-30 border-b ${open ? '' : 'backdrop-blur'}`}
+        style={{ backgroundColor: open ? colors.surface : 'var(--header-glass)', borderColor: colors.border }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <Link to="/" className="font-semibold text-base tracking-tight flex items-center gap-2" style={{ color: colors.text }}>
@@ -126,13 +126,13 @@ export default function Layout({children}){
           <div
             onClick={()=>setOpen(false)}
             className={`absolute inset-0 transition-opacity duration-200 ${open ? 'opacity-100' : 'opacity-0'}`}
-            style={{ background: 'rgba(2,6,23,0.5)' }}
+            style={{ background: 'rgba(2,6,23,0.65)' }}
           />
 
           {/* Sheet */}
           <div
             className={`absolute right-0 top-0 h-full w-[84%] max-w-sm transition-transform duration-200 ${open ? 'translate-x-0' : 'translate-x-full'}`}
-            style={{ backgroundColor: colors.surface, borderLeft: `1px solid ${colors.border}`, boxShadow: 'var(--shadow-3)' }}
+            style={{ backgroundColor: colors.surface, borderLeft: `1px solid ${colors.border}`, boxShadow: 'var(--shadow-3)', backdropFilter: 'none' }}
             role="dialog"
             aria-modal="true"
           >
