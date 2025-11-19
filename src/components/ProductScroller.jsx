@@ -96,13 +96,14 @@ export default function ProductScroller(){
       const track = trackRef.current
       if(!s || !pin || !track) return
 
-      // Ensure track's width is measured
       const viewportW = window.innerWidth
       const vh = window.innerHeight
-      // Track content natural width
       const trackW = track.scrollWidth
       const maxX = Math.max(0, trackW - viewportW)
-      const pinH = `${vh + maxX}px` // amount of vertical scroll to fully slide left->right
+      // Cap the vertical scroll length so jeda ke section berikutnya tidak terlalu panjang di layar lebar
+      const rawPin = vh + maxX
+      const capped = Math.min(rawPin, vh + 1400) // at most extra 1400px beyond 1 viewport
+      const pinH = `${capped}px`
       setDims({ vh, maxX, pinH })
     }
 
@@ -149,13 +150,11 @@ export default function ProductScroller(){
     }
   }, [dims.pinH, dims.maxX, dims.vh, prefersReduced])
 
-  // Touch behavior on mobile: explicitly allow vertical panning so sticky area doesn't block scroll
-  // Also provide a tiny horizontal swipe assist by converting small horizontal drags to vertical scroll deltas
+  // Touch behavior on mobile
   useEffect(()=>{
     const pin = pinRef.current
     if (!pin) return
 
-    // Ensure vertical panning is allowed on browsers that honor touch-action
     pin.style.touchAction = 'pan-y'
 
     let startX = 0
@@ -174,7 +173,6 @@ export default function ProductScroller(){
       const t = e.touches[0]
       const dx = t.clientX - startX
       const dy = t.clientY - startY
-      // If user swipes horizontally a lot, translate to a small vertical scroll to progress the scroller
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) {
         window.scrollTo({ top: window.scrollY + (dx > 0 ? -12 : 12) })
       }
@@ -195,9 +193,10 @@ export default function ProductScroller(){
   }, [])
 
   return (
-    <section ref={sectionRef} aria-label="Plans" className="relative mt-12" style={{ height: dims.pinH, touchAction: 'pan-y' }}>
+    <section ref={sectionRef} aria-label="Plans" className="relative mt-6" style={{ height: dims.pinH, touchAction: 'pan-y' }}>
       <div ref={pinRef} className="sticky top-0 h-screen overflow-hidden" style={{ touchAction: 'pan-y' }}>
-        <div className="flex items-center justify-between mb-3 px-1">
+        {/* Heading bar centered within content width */}
+        <div className="max-w-7xl mx-auto mb-3 px-4 sm:px-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
           <div className="text-sm" style={{ color: colors.muted }}>Scroll</div>
         </div>
@@ -213,7 +212,7 @@ export default function ProductScroller(){
 
           {/* Track: horizontally long row translated by vertical scroll */}
           <div ref={trackRef} className="absolute top-0 left-0 h-full will-change-transform">
-            <div className="flex h-full items-start gap-4 px-1">
+            <div className="flex h-full items-start gap-4 px-3">
               {products.map(p => (
                 <article key={p.id} className="w-[300px] sm:w-[340px] md:w-[380px] flex-shrink-0">
                   <Card className="h-[calc(100%-4px)]" style={{ backgroundColor: colors.surface }}>
@@ -255,6 +254,8 @@ export default function ProductScroller(){
                   </Card>
                 </article>
               ))}
+              {/* Trailing spacer so card terakhir bisa benar-benar masuk penuh */}
+              <div className="w-6 md:w-10 flex-shrink-0" />
             </div>
           </div>
         </div>
