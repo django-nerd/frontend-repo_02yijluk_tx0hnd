@@ -82,44 +82,53 @@ const products = [
 ]
 
 export default function ProductScroller(){
+  const sectionRef = useRef(null)
   const containerRef = useRef(null)
 
   useEffect(()=>{
-    const el = containerRef.current
-    if(!el) return
+    const section = sectionRef.current
+    const scroller = containerRef.current
+    if(!section || !scroller) return
 
     const onWheel = (e) => {
-      // Convert vertical wheel to horizontal when hovering the scroller
-      // This keeps the page from moving vertically while you're over the scroller
+      // Capture vertical scroll anywhere over the section and use it to scroll the product row horizontally first.
+      // Only let the page continue once the row reaches the start/end.
       const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       if (prefersReduced) return
 
-      // Only act if the event target is within our scroller
-      // and there is horizontal overflow to scroll
-      const canScrollHoriz = el.scrollWidth > el.clientWidth
+      const rect = section.getBoundingClientRect()
+      const inView = rect.top < window.innerHeight && rect.bottom > 0
+      if (!inView) return
+
+      const canScrollHoriz = scroller.scrollWidth > scroller.clientWidth
       if (!canScrollHoriz) return
 
       const absX = Math.abs(e.deltaX)
       const absY = Math.abs(e.deltaY)
+      const dominantVertical = absY >= absX
 
-      // If user is scrolling mostly vertically, translate that into horizontal movement
-      if (absY >= absX) {
-        const maxLeft = el.scrollWidth - el.clientWidth
-        const next = Math.min(maxLeft, Math.max(0, el.scrollLeft + e.deltaY))
-        if (next !== el.scrollLeft) {
+      if (!dominantVertical) return
+
+      const atStart = scroller.scrollLeft <= 0
+      const atEnd = scroller.scrollLeft >= scroller.scrollWidth - scroller.clientWidth - 1
+
+      // If not at edges, consume the vertical wheel and translate to horizontal movement
+      if (!(atStart && e.deltaY < 0) && !(atEnd && e.deltaY > 0)) {
+        const next = Math.min(scroller.scrollWidth - scroller.clientWidth, Math.max(0, scroller.scrollLeft + e.deltaY))
+        if (next !== scroller.scrollLeft) {
           e.preventDefault()
-          el.scrollTo({ left: next, behavior: 'auto' })
+          scroller.scrollTo({ left: next, behavior: 'auto' })
         }
       }
-      // If they already scroll horizontally (trackpad), let it pass through naturally
+      // If at edges and user keeps scrolling outward, allow the page to move.
     }
 
-    el.addEventListener('wheel', onWheel, { passive: false })
-    return ()=> el.removeEventListener('wheel', onWheel)
+    section.addEventListener('wheel', onWheel, { passive: false })
+    return ()=> section.removeEventListener('wheel', onWheel)
   }, [])
 
   return (
-    <section aria-label="Plans" className="mt-12">
+    <section ref={sectionRef} aria-label="Plans" className="mt-12">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
         <div className="text-sm" style={{ color: colors.muted }}>Scroll horizontally</div>
