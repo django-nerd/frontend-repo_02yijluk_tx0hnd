@@ -96,13 +96,11 @@ export default function ProductScroller(){
       const track = trackRef.current
       if(!s || !pin || !track) return
 
-      // Ensure track's width is measured
       const viewportW = window.innerWidth
       const vh = window.innerHeight
-      // Track content natural width
       const trackW = track.scrollWidth
       const maxX = Math.max(0, trackW - viewportW)
-      const pinH = `${vh + maxX}px` // amount of vertical scroll to fully slide left->right
+      const pinH = `${vh + maxX}px`
       setDims({ vh, maxX, pinH })
     }
 
@@ -145,13 +143,14 @@ export default function ProductScroller(){
 
   return (
     <section ref={sectionRef} aria-label="Plans" className="relative mt-12" style={{ height: dims.pinH }}>
-      <div ref={pinRef} className="sticky top-0 h-screen overflow-hidden">
+      {/* Center the sticky container vertically in the viewport while pinned */}
+      <div ref={pinRef} className="sticky top-1/2 -translate-y-1/2 h-[80svh] overflow-hidden">
         <div className="flex items-center justify-between mb-3 px-1">
           <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
           <div className="text-sm" style={{ color: colors.muted }}>Scroll</div>
         </div>
 
-        <div className="relative h-[calc(100svh-2.5rem)]">
+        <div className="relative h-[calc(100%-2.5rem)]">
           {/* Edge washes */}
           <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-10" style={{
             background: 'linear-gradient(to right, color-mix(in oklab, var(--bg) 92%, transparent), transparent)'
@@ -161,11 +160,11 @@ export default function ProductScroller(){
           }}/>
 
           {/* Track: horizontally long row translated by vertical scroll */}
-          <div ref={trackRef} className="absolute top-0 left-0 h-full will-change-transform">
-            <div className="flex h-full items-start gap-4 px-1">
+          <div ref={trackRef} className="absolute top-1/2 -translate-y-1/2 left-0 h-[min(64svh,600px)] will-change-transform">
+            <div className="flex h-full items-center gap-4 px-1">
               {products.map(p => (
                 <article key={p.id} className="w-[300px] sm:w-[340px] md:w-[380px] flex-shrink-0">
-                  <Card className="h-[calc(100%-4px)]" style={{ backgroundColor: colors.surface }}>
+                  <Card className="h-full" style={{ backgroundColor: colors.surface }}>
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold" style={{ color: colors.text }}>{p.name}</h3>
                       <Badge>{p.tag}</Badge>

@@ -35,29 +35,29 @@ export default function GlowTimeline({
   }, [steps.length])
 
   useEffect(()=>{
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v))
+
     const onScroll = () => {
       const el = sectionRef.current
       if(!el) return
 
       const rect = el.getBoundingClientRect()
-      const vh = window.innerHeight
-      const total = rect.height + vh
-      const y = vh - rect.top
-      const progress = Math.min(1, Math.max(0, y / total))
+      // Progress starts when section top hits viewport top (0)
+      // and completes when section bottom hits viewport top (i.e., scrolled by its own height)
+      const progress = clamp((0 - rect.top) / Math.max(1, rect.height), 0, 1)
       el.style.setProperty('--progress', String(progress))
 
-      // Reveal cards when pipe fill crosses their centers
+      // Reveal cards when pipe fill crosses their centers (relative to section top)
       const cards = el.querySelectorAll('[data-step]')
+      const pipeFillY = progress * rect.height
       cards.forEach((card) => {
         const idx = Number(card.getAttribute('data-index'))
         const cardRect = card.getBoundingClientRect()
-        const containerTop = rect.top
-        const cardCenterY = (cardRect.top + cardRect.bottom) / 2 - containerTop
-        const pipeFillY = progress * rect.height
+        const cardCenterY = (cardRect.top + cardRect.bottom) / 2 - rect.top
         if (pipeFillY >= cardCenterY - 8) {
           setVisibleSteps(prev => {
             if (prev[idx]) return prev
-            const next = [...prev]
+            const next = prev.length ? [...prev] : new Array(steps.length).fill(false)
             next[idx] = true
             return next
           })
@@ -72,7 +72,7 @@ export default function GlowTimeline({
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
     }
-  }, [])
+  }, [steps.length])
 
   return (
     <section
