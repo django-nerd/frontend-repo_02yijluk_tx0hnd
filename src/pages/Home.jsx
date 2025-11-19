@@ -3,7 +3,6 @@ import { Button } from '../components/UI'
 import Layout from '../components/Layout'
 import { colors } from '../components/Theme'
 import ProductScroller from '../components/ProductScroller'
-import GlowTimeline from '../components/GlowTimeline'
 import Footer from '../components/Footer'
 
 export default function Home(){
@@ -124,16 +123,13 @@ export default function Home(){
         />
       </section>
 
-      {/* Glowing stepped timeline section */}
-      <GlowTimeline />
-
       {/* Anchor for scrolling down from hero; positioned just before products */}
       <div ref={featuresRef} />
 
       {/* Horizontal product scroller with wheel-to-horizontal behavior until edges */}
       <ProductScroller />
 
-      {/* Removed sections after products as requested */}
+      {/* Removed Highlights (GlowTimeline) and all sections after products as requested */}
 
       <Footer />
     </Layout>
