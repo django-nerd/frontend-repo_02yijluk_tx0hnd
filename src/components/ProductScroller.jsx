@@ -212,7 +212,7 @@ export default function ProductScroller(){
 
           {/* Track: horizontally long row translated by vertical scroll */}
           <div ref={trackRef} className="absolute top-0 left-0 h-full will-change-transform">
-            <div className="flex h-full items-start gap-4 px-3">
+            <div className="flex h-full items-center gap-4 px-3">
               {products.map(p => (
                 <article key={p.id} className="w-[300px] sm:w-[340px] md:w-[380px] flex-shrink-0">
                   <Card className="h-[calc(100%-4px)]" style={{ backgroundColor: colors.surface }}>
