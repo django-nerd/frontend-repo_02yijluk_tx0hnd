@@ -75,7 +75,11 @@ export default function GlowTimeline({
   }, [])
 
   return (
-    <section ref={containerRef} aria-label="Timeline keunggulan" className="relative mt-16 md:mt-20">
+    <section
+      ref={containerRef}
+      aria-label="Timeline keunggulan"
+      className="relative mt-24 md:mt-32 mb-24 md:mb-32 max-w-6xl mx-auto px-4"
+    >
       {/* Absolute centered pipe (track + fill + spark) */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[6px]">
@@ -111,20 +115,20 @@ export default function GlowTimeline({
         </div>
       </div>
 
-      <div className="mb-6 text-center relative z-[1]">
+      <div className="mb-8 md:mb-10 text-center relative z-[1]">
         <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: colors.text }}>{title}</h2>
         {subtitle ? (
-          <p className="text-sm md:text-base mt-1" style={{ color: colors.muted }}>{subtitle}</p>
+          <p className="text-sm md:text-base mt-2" style={{ color: colors.muted }}>{subtitle}</p>
         ) : null}
       </div>
 
       {/* Steps container: grid with free middle column for pipe/connector */}
-      <div className="relative z-[1] grid grid-cols-1 md:grid-cols-[1fr_56px_1fr] gap-x-4 md:gap-x-6">
+      <div className="relative z-[1] grid grid-cols-1 md:grid-cols-[1fr_72px_1fr] gap-x-4 md:gap-x-8">
         {steps.map((s, i) => {
           const isLeft = i % 2 === 0
           const shown = visibleSteps[i]
           return (
-            <div key={s.title} className="relative md:grid md:grid-cols-[1fr_56px_1fr] md:items-center py-2">
+            <div key={s.title} className="relative md:grid md:grid-cols-[1fr_72px_1fr] md:items-center py-3">
               {/* Left spacer for alignment on md */}
               <div className={`hidden md:block ${isLeft ? 'order-1' : 'order-3'}`} />
 
@@ -153,7 +157,7 @@ export default function GlowTimeline({
               <div
                 data-step
                 data-index={i}
-                className={`${isLeft ? 'order-3 md:order-1 md:pr-6' : 'order-3 md:order-3 md:pl-6'}`}
+                className={`${isLeft ? 'order-3 md:order-1 md:pr-8' : 'order-3 md:order-3 md:pl-8'}`}
               >
                 <Card
                   className="w-full transition-transform"
