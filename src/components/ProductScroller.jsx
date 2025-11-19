@@ -86,7 +86,7 @@ export default function ProductScroller(){
   const pinRef = useRef(null)
   const trackRef = useRef(null)
 
-  const [dims, setDims] = useState({ vh: 0, maxX: 0, pinH: 'auto' })
+  const [dims, setDims] = useState({ vh: typeof window !== 'undefined' ? window.innerHeight : 0, maxX: 0, pinH: '120vh' })
   const prefersReduced = useRefMatchMedia('(prefers-reduced-motion: reduce)')
 
   useEffect(()=>{
@@ -112,10 +112,12 @@ export default function ProductScroller(){
     if (trackRef.current) ro.observe(trackRef.current)
     window.addEventListener('load', recalc)
     window.addEventListener('orientationchange', recalc)
+    window.addEventListener('resize', recalc)
     return ()=>{
       ro.disconnect()
       window.removeEventListener('load', recalc)
       window.removeEventListener('orientationchange', recalc)
+      window.removeEventListener('resize', recalc)
     }
   }, [])
 
@@ -128,11 +130,15 @@ export default function ProductScroller(){
       if(!s || !pin || !track) return
 
       const start = s.offsetTop
-      const end = start + (parseFloat(dims.pinH) - dims.vh)
+      const parsed = parseFloat(dims.pinH)
+      const end = isNaN(parsed) ? start + Math.max(0, dims.vh) : start + (parsed - dims.vh)
       const y = window.scrollY
-      const clamped = Math.max(0, Math.min(1, (y - start) / Math.max(1, (end - start))))
+      const denom = Math.max(1, (end - start))
+      const clamped = Math.max(0, Math.min(1, (y - start) / denom))
       const x = -clamped * dims.maxX
-      track.style.transform = `translate3d(${x}px,0,0)`
+      if (Number.isFinite(x)) {
+        track.style.transform = `translate3d(${x}px,0,0)`
+      }
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -143,9 +149,54 @@ export default function ProductScroller(){
     }
   }, [dims.pinH, dims.maxX, dims.vh, prefersReduced])
 
+  // Touch behavior on mobile: explicitly allow vertical panning so sticky area doesn't block scroll
+  // Also provide a tiny horizontal swipe assist by converting small horizontal drags to vertical scroll deltas
+  useEffect(()=>{
+    const pin = pinRef.current
+    if (!pin) return
+
+    // Ensure vertical panning is allowed on browsers that honor touch-action
+    pin.style.touchAction = 'pan-y'
+
+    let startX = 0
+    let startY = 0
+    let active = false
+
+    const onTouchStart = (e) => {
+      if (!e.touches || e.touches.length !== 1) return
+      const t = e.touches[0]
+      startX = t.clientX
+      startY = t.clientY
+      active = true
+    }
+    const onTouchMove = (e) => {
+      if (!active || !e.touches || e.touches.length !== 1) return
+      const t = e.touches[0]
+      const dx = t.clientX - startX
+      const dy = t.clientY - startY
+      // If user swipes horizontally a lot, translate to a small vertical scroll to progress the scroller
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) {
+        window.scrollTo({ top: window.scrollY + (dx > 0 ? -12 : 12) })
+      }
+    }
+    const onTouchEnd = () => { active = false }
+
+    pin.addEventListener('touchstart', onTouchStart, { passive: true })
+    pin.addEventListener('touchmove', onTouchMove, { passive: true })
+    pin.addEventListener('touchend', onTouchEnd)
+    pin.addEventListener('touchcancel', onTouchEnd)
+
+    return ()=>{
+      pin.removeEventListener('touchstart', onTouchStart)
+      pin.removeEventListener('touchmove', onTouchMove)
+      pin.removeEventListener('touchend', onTouchEnd)
+      pin.removeEventListener('touchcancel', onTouchEnd)
+    }
+  }, [])
+
   return (
-    <section ref={sectionRef} aria-label="Plans" className="relative mt-12" style={{ height: dims.pinH }}>
-      <div ref={pinRef} className="sticky top-0 h-screen overflow-hidden">
+    <section ref={sectionRef} aria-label="Plans" className="relative mt-12" style={{ height: dims.pinH, touchAction: 'pan-y' }}>
+      <div ref={pinRef} className="sticky top-0 h-screen overflow-hidden" style={{ touchAction: 'pan-y' }}>
         <div className="flex items-center justify-between mb-3 px-1">
           <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
           <div className="text-sm" style={{ color: colors.muted }}>Scroll</div>
