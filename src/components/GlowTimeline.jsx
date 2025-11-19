@@ -1,15 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, Fragment } from 'react'
 import { Card } from './UI'
 import { colors, radii } from './Theme'
 
 /*
   GlowTimeline (Scroll-Activated Timeline Connector)
-  - Central vertical pipe (6px) pinned to the visual center of the section
-  - Pipe fill height follows scroll; spark dot at the tip
-  - Alternating cards left/right; initially hidden, fade-in upward
-  - Connector line animates from pipe center to each card when revealed
+  - Central vertical pipe (6px) at the visual center
+  - Fill height follows scroll; spark at the tip
+  - Alternating cards left/right on md+; stacked on mobile
+  - Connector animates from pipe to card when revealed
   - Respects prefers-reduced-motion
-  - Now supports props to customize title, subtitle, and steps.
+  - Accepts props: title, subtitle, steps
 */
 export default function GlowTimeline({
   title = 'Why people pick Nimbus',
@@ -122,18 +122,44 @@ export default function GlowTimeline({
         ) : null}
       </div>
 
-      {/* Steps container: grid with free middle column for pipe/connector */}
-      <div className="relative z-[1] grid grid-cols-1 md:grid-cols-[1fr_72px_1fr] gap-x-4 md:gap-x-8">
+      {/* Steps container: three columns on md+, single column on mobile */}
+      <div className="relative z-[1] grid grid-cols-1 md:grid-cols-[1fr_72px_1fr] gap-y-4 md:gap-y-6 gap-x-4 md:gap-x-8">
         {steps.map((s, i) => {
           const isLeft = i % 2 === 0
           const shown = visibleSteps[i]
           return (
-            <div key={s.title} className="relative md:grid md:grid-cols-[1fr_72px_1fr] md:items-center py-3">
-              {/* Left spacer for alignment on md */}
-              <div className={`hidden md:block ${isLeft ? 'order-1' : 'order-3'}`} />
+            <Fragment key={s.title}>
+              {/* Left placeholder or left card */}
+              <div
+                className={`${isLeft ? '' : 'hidden md:block'} md:col-start-1`}
+              >
+                {isLeft ? (
+                  <div data-step data-index={i}>
+                    <Card
+                      className="w-full transition-transform"
+                      style={{
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                        borderRadius: radii.base,
+                        transform: shown || reduceMotion.current ? 'none' : 'translateY(12px)',
+                        opacity: shown || reduceMotion.current ? 1 : 0,
+                        transition: reduceMotion.current ? undefined : 'opacity 420ms ease, transform 420ms ease'
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 w-8 h-8 rounded-[12px]" style={{ background: 'rgba(167,139,250,0.16)' }} />
+                        <div className="w-full">
+                          <h3 className="font-semibold" style={{ color: colors.text }}>{s.title}</h3>
+                          <p className="text-sm mt-0.5" style={{ color: colors.muted }}>{s.desc}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                ) : null}
+              </div>
 
-              {/* Center column: connector, anchored to pipe center */}
-              <div className="hidden md:flex relative items-center justify-center order-2">
+              {/* Center connector (only md+) */}
+              <div className="hidden md:flex md:col-start-2 relative items-center justify-center">
                 <div
                   className={`absolute h-[2px] ${isLeft ? 'left-0 right-1/2' : 'left-1/2 right-0'}`}
                   style={{
@@ -153,33 +179,58 @@ export default function GlowTimeline({
                 />
               </div>
 
-              {/* Card cell */}
-              <div
-                data-step
-                data-index={i}
-                className={`${isLeft ? 'order-3 md:order-1 md:pr-8' : 'order-3 md:order-3 md:pl-8'}`}
-              >
-                <Card
-                  className="w-full transition-transform"
-                  style={{
-                    backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                    borderRadius: radii.base,
-                    transform: shown || reduceMotion.current ? 'none' : 'translateY(12px)',
-                    opacity: shown || reduceMotion.current ? 1 : 0,
-                    transition: reduceMotion.current ? undefined : 'opacity 420ms ease, transform 420ms ease'
-                  }}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 w-8 h-8 rounded-[12px]" style={{ background: 'rgba(167,139,250,0.16)' }} />
-                    <div className="w-full">
-                      <h3 className="font-semibold" style={{ color: colors.text }}>{s.title}</h3>
-                      <p className="text-sm mt-0.5" style={{ color: colors.muted }}>{s.desc}</p>
-                    </div>
+              {/* Right placeholder or right card (mobile shows card normally below due to single column) */}
+              <div className={`${isLeft ? 'hidden md:block' : ''} md:col-start-3`}>
+                {!isLeft ? (
+                  <div data-step data-index={i}>
+                    <Card
+                      className="w-full transition-transform"
+                      style={{
+                        backgroundColor: colors.surface,
+                        borderColor: colors.border,
+                        borderRadius: radii.base,
+                        transform: shown || reduceMotion.current ? 'none' : 'translateY(12px)',
+                        opacity: shown || reduceMotion.current ? 1 : 0,
+                        transition: reduceMotion.current ? undefined : 'opacity 420ms ease, transform 420ms ease'
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="mt-0.5 w-8 h-8 rounded-[12px]" style={{ background: 'rgba(167,139,250,0.16)' }} />
+                        <div className="w-full">
+                          <h3 className="font-semibold" style={{ color: colors.text }}>{s.title}</h3>
+                          <p className="text-sm mt-0.5" style={{ color: colors.muted }}>{s.desc}</p>
+                        </div>
+                      </div>
+                    </Card>
                   </div>
-                </Card>
+                ) : null}
               </div>
-            </div>
+
+              {/* Mobile card (single column): render card once per step when hidden on md left/right */}
+              <div className="md:hidden">
+                <div data-step data-index={i}>
+                  <Card
+                    className="w-full transition-transform"
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                      borderRadius: radii.base,
+                      transform: shown || reduceMotion.current ? 'none' : 'translateY(12px)',
+                      opacity: shown || reduceMotion.current ? 1 : 0,
+                      transition: reduceMotion.current ? undefined : 'opacity 420ms ease, transform 420ms ease'
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5 w-8 h-8 rounded-[12px]" style={{ background: 'rgba(167,139,250,0.16)' }} />
+                      <div className="w-full">
+                        <h3 className="font-semibold" style={{ color: colors.text }}>{s.title}</h3>
+                        <p className="text-sm mt-0.5" style={{ color: colors.muted }}>{s.desc}</p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            </Fragment>
           )
         })}
       </div>
