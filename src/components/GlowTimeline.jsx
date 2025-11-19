@@ -3,28 +3,38 @@ import { Card } from './UI'
 import { colors, radii } from './Theme'
 
 /*
-  GlowTimeline
+  GlowTimeline (Scroll-Activated Timeline Connector)
   - Central vertical pipe (6px) pinned to the visual center of the section
   - Pipe fill height follows scroll; spark dot at the tip
   - Alternating cards left/right; initially hidden, fade-in upward
   - Connector line animates from pipe center to each card when revealed
   - Respects prefers-reduced-motion
+  - Now supports props to customize title, subtitle, and steps.
 */
-export default function GlowTimeline(){
+export default function GlowTimeline({
+  title = 'Why people pick Nimbus',
+  subtitle = 'A central pipe fills as you scroll; cards appear when the fill reaches them.',
+  steps: stepsProp
+}){
   const containerRef = useRef(null)
   const reduceMotion = useRef(false)
-  const [visibleSteps, setVisibleSteps] = useState([false, false, false, false])
+  const [visibleSteps, setVisibleSteps] = useState([])
 
-  const steps = useMemo(()=>[
+  const defaultSteps = useMemo(()=>[
     { title: 'Blazing VPS', desc: 'SSD NVMe, global regions, instant provision' },
     { title: 'Domains', desc: 'Simple search, WHOIS privacy, easy DNS' },
     { title: 'Panels', desc: 'Game & web panels with refined UX' },
     { title: 'Auto Payment', desc: 'Seamless capture, retries, fraud guard' },
   ], [])
 
+  const steps = stepsProp && stepsProp.length ? stepsProp : defaultSteps
+
   useEffect(()=>{
     reduceMotion.current = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    setVisibleSteps(new Array(steps.length).fill(false))
+  }, [steps.length])
 
+  useEffect(()=>{
     const onScroll = () => {
       const el = containerRef.current
       if(!el) return
@@ -65,7 +75,7 @@ export default function GlowTimeline(){
   }, [])
 
   return (
-    <section ref={containerRef} aria-label="Highlights" className="relative mt-14">
+    <section ref={containerRef} aria-label="Timeline keunggulan" className="relative mt-16 md:mt-20">
       {/* Absolute centered pipe (track + fill + spark) */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[6px]">
@@ -102,8 +112,10 @@ export default function GlowTimeline(){
       </div>
 
       <div className="mb-6 text-center relative z-[1]">
-        <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: colors.text }}>Why people pick Nimbus</h2>
-        <p className="text-sm md:text-base mt-1" style={{ color: colors.muted }}>A central pipe fills as you scroll; cards appear when the fill reaches them.</p>
+        <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: colors.text }}>{title}</h2>
+        {subtitle ? (
+          <p className="text-sm md:text-base mt-1" style={{ color: colors.muted }}>{subtitle}</p>
+        ) : null}
       </div>
 
       {/* Steps container: grid with free middle column for pipe/connector */}

@@ -4,6 +4,7 @@ import Layout from '../components/Layout'
 import { colors } from '../components/Theme'
 import ProductScroller from '../components/ProductScroller'
 import Footer from '../components/Footer'
+import GlowTimeline from '../components/GlowTimeline'
 
 export default function Home(){
   const featuresRef = useRef(null)
@@ -38,6 +39,15 @@ export default function Home(){
   const shift = reduceMotion.current ? 0 : Math.min(40, scrollY * 0.06)
   const blobShiftA = reduceMotion.current ? 0 : Math.min(60, scrollY * 0.03)
   const blobShiftB = reduceMotion.current ? 0 : Math.min(60, scrollY * 0.02)
+
+  const timelineSteps = [
+    { title: 'Performa Kencang', desc: 'CPU modern + SSD NVMe untuk workload berat dan latensi rendah.' },
+    { title: 'Jaringan Global', desc: 'Lokasi server beragam agar lebih dekat dengan pengguna Anda.' },
+    { title: 'Panel Super Mudah', desc: 'Kelola VPS, domain, dan panel dengan UI yang ramah dan cepat.' },
+    { title: 'Keamanan & Reliabilitas', desc: 'Isolasi yang kuat, backup opsional, dan SLA uptime 99.9%.' },
+    { title: 'Pembayaran Otomatis', desc: 'Dukungan payment lokal & global dengan penagihan otomatis.' },
+    { title: 'Dukungan 24/7', desc: 'Tim support responsif siap membantu kapan pun dibutuhkan.' },
+  ]
 
   return (
     <Layout>
@@ -123,13 +133,18 @@ export default function Home(){
         />
       </section>
 
-      {/* Anchor for scrolling down from hero; positioned just before products */}
+      {/* Timeline keunggulan (Scroll-Activated Timeline Connector) */}
+      <GlowTimeline
+        title="Keunggulan Nimbus"
+        subtitle="Pipa tengah akan terisi seiring scroll; setiap poin muncul dengan konektor animasi."
+        steps={timelineSteps}
+      />
+
+      {/* Anchor untuk ke bagian produk (Choose your VPS) */}
       <div ref={featuresRef} />
 
-      {/* Horizontal product scroller with wheel-to-horizontal behavior until edges */}
+      {/* Horizontal product scroller dengan wheel-to-horizontal behavior */}
       <ProductScroller />
-
-      {/* Removed Highlights (GlowTimeline) and all sections after products as requested */}
 
       <Footer />
     </Layout>
