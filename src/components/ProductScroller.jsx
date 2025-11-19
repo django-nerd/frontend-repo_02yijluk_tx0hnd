@@ -106,20 +106,20 @@ export default function ProductScroller(){
   }, [dims.pinH, dims.maxX, dims.vh, prefersReduced])
 
   return (
-    <section ref={sectionRef} aria-label="Plans" className="relative mt-6" style={{ height: dims.pinH, touchAction: 'pan-y' }}>
+    <section ref={sectionRef} aria-label="Plans" className="relative mt-2" style={{ height: dims.pinH, touchAction: 'pan-y' }}>
       {/* Pre-spacer to visually pin when section center hits viewport center (Edge-safe) */}
-      <div className="h-[50vh]" />
+      <div className="h-[18vh] md:h-[28vh]" />
 
       {/* Sticky pinned area (Edge-friendly: top-0) */}
       <div className="sticky top-0 z-10" style={{ background: 'var(--bg)' }}>
         {/* Heading bar */}
-        <div className="max-w-7xl mx-auto mb-3 px-4 sm:px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto mb-2 px-4 sm:px-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold" style={{ color: colors.text }}>Choose your VPS</h2>
           <div className="text-sm" style={{ color: colors.muted }}>Scroll</div>
         </div>
 
         {/* Center content vertically within viewport */}
-        <div className="h-[calc(100svh-2.5rem)] grid place-items-center relative overflow-hidden">
+        <div className="h-[calc(100svh-2.25rem)] grid place-items-center relative overflow-hidden">
           {/* Edge washes */}
           <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-10" style={{
             background: 'linear-gradient(to right, color-mix(in oklab, var(--bg) 92%, transparent), transparent)'
@@ -178,7 +178,7 @@ export default function ProductScroller(){
       </div>
 
       {/* Post-spacer to gracefully release sticky */}
-      <div className="h-[50vh]" />
+      <div className="h-[24vh] md:h-[32vh]" />
     </section>
   )
 }

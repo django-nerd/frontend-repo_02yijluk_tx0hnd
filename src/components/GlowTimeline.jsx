@@ -78,10 +78,10 @@ export default function GlowTimeline({
     <section
       ref={sectionRef}
       aria-label="Timeline keunggulan"
-      className="relative mt-24 md:mt-32 mb-24 md:mb-32 max-w-6xl mx-auto px-4 overflow-hidden"
+      className="relative mt-20 md:mt-28 mb-12 md:mb-16 max-w-6xl mx-auto px-4 overflow-hidden"
     >
       {/* Heading */}
-      <div className="mb-8 md:mb-10 text-center relative z-[2]">
+      <div className="mb-6 md:mb-8 text-center relative z-[2]">
         <h2 className="text-2xl md:text-3xl font-semibold" style={{ color: colors.text }}>{title}</h2>
         {subtitle ? (
           <p className="text-sm md:text-base mt-2" style={{ color: colors.muted }}>{subtitle}</p>
