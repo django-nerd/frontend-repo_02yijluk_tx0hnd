@@ -5,6 +5,8 @@ import { colors } from '../components/Theme'
 import ProductScroller from '../components/ProductScroller'
 import Footer from '../components/Footer'
 import GlowTimeline from '../components/GlowTimeline'
+import Testimonials from '../components/Testimonials'
+import FAQ from '../components/FAQ'
 
 export default function Home(){
   const featuresRef = useRef(null)
@@ -145,6 +147,10 @@ export default function Home(){
 
       {/* Horizontal product scroller dengan wheel-to-horizontal behavior */}
       <ProductScroller />
+
+      {/* Section tambahan setelah produk */}
+      <Testimonials />
+      <FAQ />
 
       <Footer />
     </Layout>
